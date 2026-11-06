@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monke Study — Gamified Focus Timer</title>
+  
+  <!-- Tailwind CSS & Supabase JS SDK -->
+  <script src="[suspicious link removed]"></script>
+  <script src="[suspicious link removed]"></script>
+  <link href="[suspicious link removed]" rel="stylesheet" />
+
+  <style>
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      transition: background 0.5s ease, color 0.3s ease;
+    }
+
+    /* Tema Background Unlocked */
+    .theme-default { background-color: #121212; color: #e2e8f0; }
+    .theme-lofi { 
+      background: linear-gradient(-45deg, #1e1b4b, #312e81, #4338ca, #1e1b4b); 
+      background-size: 400% 400%; 
+      animation: gradient 15s ease infinite; 
+      color: #f3f4f6;
+    }
+    .theme-cyber { 
+      background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #0284c7 100%); 
+      color: #38bdf8;
+    }
+    .theme-forest { 
+      background: linear-gradient(180deg, #052e16 0%, #14532d 100%); 
+      color: #4ade80;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body class="theme-default min-h-screen flex flex-col justify-between p-4 md:p-8">
+
+  <!-- TOP BAR / HEADER -->
+  <header class="max-w-4xl w-full mx-auto flex flex-wrap items-center justify-between gap-4 py-4 border-b border-white/10">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">🐒</span>
+      <h1 class="text-xl font-extrabold tracking-wider text-amber-400">monke.study</h1>
+    </div>
+
+    <!-- Stats User -->
+    <div class="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-xl border border-white/10 text-sm">
+      <div title="Koin yang diperoleh"><span class="mr-1">🪙</span> <strong id="user-coins">0</strong></div>
+      <div title="Total Experience Points"><span class="mr-1">⭐</span> <strong id="user-xp">0</strong> XP</div>
+      <div title="Streak Belajar Harian"><span class="mr-1">🔥</span> <strong id="user-streak">1</strong>d</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-2">
+      <button onclick="toggleModal('shop-modal')" class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 rounded-lg text-sm flex items-center gap-1.5 transition">
+        🛍️ Shop
+      </button>
+      <button onclick="toggleModal('supabase-modal')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm transition">
+        ⚙️ Supabase
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN TIMER SECTION -->
+  <main class="max-w-2xl w-full mx-auto my-auto py-10 flex flex-col items-center text-center">
+    
+    <!-- Mode Selector -->
+    <div class="flex gap-2 mb-8 bg-white/5 p-1.5 rounded-2xl border border-white/10">
+      <button onclick="setMode('focus', 25)" id="btn-mode-focus" class="px-4 py-2 rounded-xl text-sm font-semibold transition bg-amber-500 text-black">Focus (25m)</button>
+      <button onclick="setMode('short', 5)" id="btn-mode-short" class="px-4 py-2 rounded-xl text-sm font-semibold transition opacity-60 hover:opacity-100">Short Break (5m)</button>
+      <button onclick="setMode('long', 15)" id="btn-mode-long" class="px-4 py-2 rounded-xl text-sm font-semibold transition opacity-60 hover:opacity-100">Long Break (15m)</button>
+    </div>
+
+    <!-- Subject Input -->
+    <div class="mb-6 w-full max-w-xs">
+      <input type="text" id="subject-input" placeholder="📚 Topik Belajar (contoh: Coding)..." class="w-full bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-center text-sm focus:outline-none focus:border-amber-400 transition" />
+    </div>
+
+    <!-- Timer Display -->
+    <div id="timer-display" class="text-7xl md:text-9xl font-extrabold tracking-tighter my-4 select-none drop-shadow-lg">
+      25:00
+    </div>
+
+    <!-- Controls -->
+    <div class="flex gap-4 mt-6">
+      <button id="start-btn" onclick="toggleTimer()" class="px-8 py-3 bg-amber-400 hover:bg-amber-300 text-black font-bold text-lg rounded-2xl shadow-lg transition transform active:scale-95">
+        ▶ START
+      </button>
+      <button onclick="resetTimer()" class="px-6 py-3 bg-white/10 hover:bg-white/20 font-semibold rounded-2xl transition">
+        🔄 RESET
+      </button>
+    </div>
+
+    <!-- Gamification Reward Hint -->
+    <p class="text-xs opacity-50 mt-8">💡 Selesaikan 25 menit untuk mendapatkan <strong>+25 🪙 Coins</strong> & <strong>+250 ⭐ XP</strong>!</p>
+  </main>
+
+  <!-- HISTORY LOG TABLE -->
+  <section class="max-w-4xl w-full mx-auto my-4 bg-white/5 rounded-2xl p-4 border border-white/10">
+    <h3 class="text-sm font-bold opacity-80 mb-3 flex items-center gap-2">📜 Riwayat Sesi Terakhir</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead class="opacity-50 border-b border-white/10">
+          <tr>
+            <th class="pb-2">Subjek</th>
+            <th class="pb-2">Durasi</th>
+            <th class="pb-2">Hadiah</th>
+            <th class="pb-2">Waktu</th>
+          </tr>
+        </thead>
+        <tbody id="session-log">
+          <tr>
+            <td colspan="4" class="py-3 text-center opacity-40">Belum ada sesi belajar yang selesai. Yuk mulai sekarang!</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MODAL: SHOP & BACKGROUNDS -->
+  <div id="shop-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-[#1e1e1e] border border-white/10 rounded-2xl p-6 max-w-md w-full text-left">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-amber-400">🛍️ Monke Shop</h3>
+        <button onclick="toggleModal('shop-modal')" class="text-sm opacity-60 hover:opacity-100">✕</button>
+      </div>
+      <p class="text-xs opacity-70 mb-4">Tukarkan koin hasil belajar untuk membuka animasi background keren!</p>
+
+      <div class="space-y-3" id="shop-items">
+        <!-- Dynamic Items rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SUPABASE CONFIG -->
+  <div id="supabase-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-[#1e1e1e] border border-white/10 rounded-2xl p-6 max-w-md w-full text-left">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-sky-400">⚙️ Integrasi Supabase</h3>
+        <button onclick="toggleModal('supabase-modal')" class="text-sm opacity-60 hover:opacity-100">✕</button>
+      </div>
+      <p class="text-xs opacity-70 mb-4">Masukkan URL & API Key proyek Supabase Anda untuk menyimpan data ke cloud database secara otomatis.</p>
+      
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block mb-1 opacity-80">Supabase Project URL</label>
+          <input type="text" id="sp-url" placeholder="[suspicious link removed]" class="w-full bg-white/5 border border-white/10 p-2.5 rounded-lg focus:outline-none focus:border-sky-400" />
+        </div>
+        <div>
+          <label class="block mb-1 opacity-80">Supabase Anon Key</label>
+          <input type="password" id="sp-key" placeholder="eyJhYmdj..." class="w-full bg-white/5 border border-white/10 p-2.5 rounded-lg focus:outline-none focus:border-sky-400" />
+        </div>
+        <button onclick="saveSupabaseConfig()" class="w-full py-2.5 bg-sky-500 hover:bg-sky-400 font-bold text-black rounded-lg transition mt-2">
+          Simpan & Hubungkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // --- STATE UTAMA ---
+    let timerState = {
+      minutes: 25,
+      seconds: 0,
+      initialMinutes: 25,
+      isRunning: false,
+      intervalId: null,
+      mode: 'focus'
+    };
+
+    let userProfile = {
+      coins: 0,
+      xp: 0,
+      streak: 1,
+      equippedTheme: 'theme-default',
+      inventory: ['theme-default']
+    };
+
+    let sessionHistory = [];
+    let supabaseClient = null;
+
+    // --- SHOP ITEMS CONFIG ---
+    const shopItems = [
+      { id: 'theme-default', name: 'Dark Minimalist', cost: 0, class: 'theme-default', desc: 'Tema default bersih dan tanpa distraksi.' },
+      { id: 'theme-lofi', name: 'Lofi Night Gradient', cost: 50, class: 'theme-lofi', desc: 'Animasi gradien malam ungu khas lofi.' },
+      { id: 'theme-cyber', name: 'Cyberpunk Neon', cost: 100, class: 'theme-cyber', desc: 'Nuansa biru neon futuristik.' },
+      { id: 'theme-forest', name: 'Deep Forest', cost: 150, class: 'theme-forest', desc: 'Warna hijau hutan menenangkan.' }
+    ];
+
+    // --- INIT APP ---
+    window.onload = () => {
+      loadUserData();
+      renderShop();
+      updateUI();
+      checkSupabaseConnection();
+    };
+
+    // --- TIMER LOGIC ---
+    function updateTimerDisplay() {
+      const m = String(timerState.minutes).padStart(2, '0');
+      const s = String(timerState.seconds).padStart(2, '0');
+      document.getElementById('timer-display').innerText = `${m}:${s}`;
+      document.title = `(${m}:${s}) Monke Study`;
+    }
+
+    function setMode(mode, mins) {
+      if (timerState.isRunning) resetTimer();
+      timerState.mode = mode;
+      timerState.initialMinutes = mins;
+      timerState.minutes = mins;
+      timerState.seconds = 0;
+
+      // Toggle Active Button UI
+      ['focus', 'short', 'long'].forEach(m => {
+        const btn = document.getElementById(`btn-mode-${m}`);
+        if (m === mode) {
+          btn.className = 'px-4 py-2 rounded-xl text-sm font-semibold transition bg-amber-500 text-black';
+        } else {
+          btn.className = 'px-4 py-2 rounded-xl text-sm font-semibold transition opacity-60 hover:opacity-100';
+        }
+      });
+
+      updateTimerDisplay();
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('start-btn');
+      if (timerState.isRunning) {
+        clearInterval(timerState.intervalId);
+        timerState.isRunning = false;
+        btn.innerText = '▶ RESUME';
+        btn.className = 'px-8 py-3 bg-amber-400 hover:bg-amber-300 text-black font-bold text-lg rounded-2xl shadow-lg transition';
+      } else {
+        timerState.isRunning = true;
+        btn.innerText = '⏸ PAUSE';
+        btn.className = 'px-8 py-3 bg-rose-500 hover:bg-rose-400 text-white font-bold text-lg rounded-2xl shadow-lg transition';
+
+        timerState.intervalId = setInterval(() => {
+          if (timerState.seconds === 0) {
+            if (timerState.minutes === 0) {
+              completeSession();
+              return;
+            }
+            timerState.minutes--;
+            timerState.seconds = 59;
+          } else {
+            timerState.seconds--;
+          }
+          updateTimerDisplay();
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerState.intervalId);
+      timerState.isRunning = false;
+      timerState.minutes = timerState.initialMinutes;
+      timerState.seconds = 0;
+      
+      const btn = document.getElementById('start-btn');
+      btn.innerText = '▶ START';
+      btn.className = 'px-8 py-3 bg-amber-400 hover:bg-amber-300 text-black font-bold text-lg rounded-2xl shadow-lg transition';
+      
+      updateTimerDisplay();
+    }
+
+    function completeSession() {
+      resetTimer();
+      playBeepSound();
+
+      const duration = timerState.initialMinutes;
+      const subject = document.getElementById('subject-input').value.trim() || 'General Focus';
+      
+      // Hitung Gamifikasi
+      const earnedCoins = duration * 1;
+      const earnedXP = duration * 10;
+
+      userProfile.coins += earnedCoins;
+      userProfile.xp += earnedXP;
+
+      // Simpan Sesi
+      const session = {
+        subject: subject,
+        duration: duration,
+        coins: earnedCoins,
+        xp: earnedXP,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      sessionHistory.unshift(session);
+
+      saveUserData();
+      syncToSupabase(session);
+
+      alert(`🎉 Sesi Selesai!\nAnda mendapatkan +${earnedCoins} 🪙 Coins dan +${earnedXP} ⭐ XP!`);
+      updateUI();
+    }
+
+    // --- GAMIFICATION & SHOP SYSTEM ---
+    function renderShop() {
+      const container = document.getElementById('shop-items');
+      container.innerHTML = shopItems.map(item => {
+        const isOwned = userProfile.inventory.includes(item.id);
+        const isEquipped = userProfile.equippedTheme === item.class;
+
+        let btnHtml = '';
+        if (isEquipped) {
+          btnHtml = `<span class="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-md font-bold">Dipakai</span>`;
+        } else if (isOwned) {
+          btnHtml = `<button onclick="equipItem('${item.class}')" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1 rounded-md font-bold transition">Pakai</button>`;
+        } else {
+          btnHtml = `<button onclick="buyItem('${item.id}', ${item.cost}, '${item.class}')" class="text-xs bg-amber-400 hover:bg-amber-300 text-black px-3 py-1 rounded-md font-bold transition">Beli (${item.cost} 🪙)</button>`;
+        }
+
+        return `
+          <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+            <div>
+              <div class="font-bold text-sm">${item.name}</div>
+              <div class="text-xs opacity-50">${item.desc}</div>
+            </div>
+            <div>${btnHtml}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function buyItem(id, cost, itemClass) {
+      if (userProfile.coins < cost) {
+        alert('Koin Anda belum cukup! Kumpulkan lebih banyak koin dengan belajar.');
+        return;
+      }
+      userProfile.coins -= cost;
+      userProfile.inventory.push(id);
+      userProfile.equippedTheme = itemClass;
+      saveUserData();
+      renderShop();
+      updateUI();
+    }
+
+    function equipItem(itemClass) {
+      userProfile.equippedTheme = itemClass;
+      saveUserData();
+      renderShop();
+      updateUI();
+    }
+
+    // --- STORAGE & SYNC ---
+    function saveUserData() {
+      localStorage.setItem('monke_profile', JSON.stringify(userProfile));
+      localStorage.setItem('monke_sessions', JSON.stringify(sessionHistory));
+    }
+
+    function loadUserData() {
+      const savedProfile = localStorage.getItem('monke_profile');
+      const savedSessions = localStorage.getItem('monke_sessions');
+
+      if (savedProfile) userProfile = JSON.parse(savedProfile);
+      if (savedSessions) sessionHistory = JSON.parse(savedSessions);
+    }
+
+    function updateUI() {
+      document.getElementById('user-coins').innerText = userProfile.coins;
+      document.getElementById('user-xp').innerText = userProfile.xp;
+      document.getElementById('user-streak').innerText = userProfile.streak;
+
+      // Update Theme Background
+      document.body.className = `${userProfile.equippedTheme} min-h-screen flex flex-col justify-between p-4 md:p-8`;
+
+      // Render Session Logs
+      const logBody = document.getElementById('session-log');
+      if (sessionHistory.length === 0) {
+        logBody.innerHTML = `<tr><td colspan="4" class="py-3 text-center opacity-40">Belum ada sesi belajar yang selesai. Yuk mulai sekarang!</td></tr>`;
+      } else {
+        logBody.innerHTML = sessionHistory.map(s => `
+          <tr class="border-b border-white/5">
+            <td class="py-2.5 font-bold">${s.subject}</td>
+            <td class="py-2.5">${s.duration} mnt</td>
+            <td class="py-2.5 text-amber-300">+${s.coins} 🪙 | +${s.xp} XP</td>
+            <td class="py-2.5 opacity-60">${s.timestamp}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    // --- SUPABASE INTEGRATION ---
+    function checkSupabaseConnection() {
+      const url = localStorage.getItem('sp_url');
+      const key = localStorage.getItem('sp_key');
+      if (url && key && window.supabase) {
+        supabaseClient = window.supabase.createClient(url, key);
+        console.log("Connected to Supabase!");
+      }
+    }
+
+    function saveSupabaseConfig() {
+      const url = document.getElementById('sp-url').value.trim();
+      const key = document.getElementById('sp-key').value.trim();
+      if (!url || !key) return alert('Harap isi URL dan Anon Key!');
+
+      localStorage.setItem('sp_url', url);
+      localStorage.setItem('sp_key', key);
+      checkSupabaseConnection();
+      toggleModal('supabase-modal');
+      alert('Berhasil menyimpan konfigurasi Supabase!');
+    }
+
+    async function syncToSupabase(sessionData) {
+      if (!supabaseClient) return;
+      try {
+        await supabaseClient.from('study_sessions').insert([{
+          subject: sessionData.subject,
+          duration_minutes: sessionData.duration,
+          coins_earned: sessionData.coins,
+          xp_earned: sessionData.xp
+        }]);
+      } catch (err) {
+        console.error("Gagal sinkronisasi ke Supabase:", err);
+      }
+    }
+
+    // --- HELPERS ---
+    function toggleModal(id) {
+      document.getElementById(id).classList.toggle('hidden');
+    }
+
+    function playBeepSound() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 587.33; // D5 note
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.5);
+    }
+  </script>
+</body>
+</html>
