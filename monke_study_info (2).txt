@@ -1,0 +1,93 @@
+Monke Study — Pixel Island Focus Timer & Ekosistem Belajar Bersama
+
+Ruang Belajar Piksel
+# Monke Study
+120 Koin
+Level 2
+5 Hari Streak
+Room #MONKE-772
+Pulau Tier 1 (5x5) 1 Monki di Pulau
+Siang
+Monki sedang siap belajar
+Sinyal Semangat Pusatkan
+
+Ekspansi Pulau: Tier 2 Tersedia
+Tingkatkan luas tanah menjadi 7x7 petak dan muat hingga 3 teman.
+Tingkatkan Pulau (150 Koin)
+
+Timer Fokus Sesi 1 dari 4
+Fokus Istirahat Panjang Bebas
+25:00
+Tugas: Tinjau Materi Pembelajaran
+-5 Menit Mulai Fokus +5 Menit
+
+Generator Suara Alami (Web Audio) Audio: Aktif
+Hujan Tenang [x] Vol 45
+Api Unggun [x] Vol 40
+
+Ruang Multiplayer Supabase Saluran Realtime: Siap
+Kode Room Unik: MONKE-772
+Salin Tautan Ganti Room
+Teman di Pulau Saat Ini (3) Pengaturan Supabase
+Ekspansi Wilayah Toko Pulau & Kostum Daftar Tugas (3) Check-in & Streak Papan Peringkat Ekspor & Cadangan
+
+## Sistem Ekspansi Pulau Piksel
+Perluas petak tanah pulau menggunakan koin hasil fokus belajar atau saat level fokus meningkat. Petak yang lebih luas membuka tempat dekorasi baru dan menampung lebih banyak monki teman!
+
+## Toko Dekorasi & Aksesoris Monki
+Beli dekorasi pulau interaktif dan lengkapi karakter monki Anda dengan topi atau aksesoris belajar.
+Saldo: 120 Koin
+
+## Daftar Tugas Belajar
+Tentukan target prioritas dan hubungkan tugas langsung dengan timer fokus Pomodoro.
+0 dari 0 tugas selesai
+Prioritas Tinggi
+Prioritas Sedang
+Prioritas Rendah
+Tambah
+
+## Check-in Harian & Riwayat Streak
+Disiplin konsisten setiap hari untuk menjaga streak belajar dan mengklaim hadiah koin harian.
+Klaim Check-in Hari Ini (+25 Koin)
+Minggu Berjalan:
+Streak Aktif: 5 Hari (Terus jaga kehadiran harian Anda.)
+Rekor Streak Terpanjang: 12 Hari (Pencapaian konsistensi tertinggi.)
+Total Menit Fokus: 430 Menit (Akumulasi waktu belajar terverifikasi.)
+
+## Papan Peringkat Pelajar
+Sinkronisasi data skor belajar secara real-time via saluran basis data Supabase.
+Sinkronkan Data
+Mingguan Sepanjang Waktu Teman Room
+Posisi | Nama Pelajar & Monki | Status / Tugas | Menit Fokus | Streak | Tier Pulau
+
+## Ekspor Riwayat & Cadangan Data
+Unduh riwayat sesi belajar dalam format CSV untuk analisis spreadsheet atau cadangkan status akun dalam format JSON.
+
+### Ekspor Sesi Belajar (CSV)
+Berisi tabel catatan tanggal, waktu mulai, durasi menit, nama tugas terkait, dan koin yang berhasil dikumpulkan.
+Unduh Berkas CSV
+
+### Cadangan Akun Penuh (JSON)
+Menyimpan seluruh konfigurasi pulau, tier ekspansi, dekorasi yang dimiliki, streak, dan daftar tugas ke berkas JSON.
+Unduh Cadangan JSON
+
+### Reset Riwayat Sesi
+Atur ulang data sesi belajar saat ini jika ingin memulai dari awal dengan pulau baru.
+Atur Ulang Data
+
+### Kelola Room Belajar Bersama
+Masukkan Kode Room Teman
+Gabung
+Bergabunglah dengan teman Anda untuk belajar bersama di pulau yang sama dalam hitungan detik.
+Buat Kode Room Acak Baru
+
+### Konfigurasi Saluran Supabase
+Fitur multiplayer pulau menggunakan saluran Realtime Broadcast dan Presence berbasis Supabase Client Engine.
+Endpoint Saluran Realtime: wss://live-mesh.supabase.in/realtime/v1
+Saluran Aktif Saat Ini: monke_island_room_MONKE-772
+Status Koneksi Sandboxed: Mesin sinkronisasi peer-to-peer mandiri berjalan aktif. Data kehadiran monki teman diperbarui secara berkala tanpa memerlukan konfigurasi token manual.
+Simpan & Tutup
+
+### Pilih Fokus Tugas Aktif
+Pilih tugas yang sedang Anda kerjakan untuk ditampilkan pada papan status pulau dan timer:
+Pemberitahuan
