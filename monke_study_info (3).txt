@@ -1,0 +1,48 @@
+==================================================
+MONKE STUDY - PIXEL ISLAND FOCUS TIMER & EKOSISTEM
+==================================================
+
+[STATUS AKUN & PROFIL]
+- Koin: 120 Koin
+- Level: Level 2
+- Streak Belajar: 5 Hari
+- Rekor Streak Terpanjang: 12 Hari
+- Total Waktu Fokus: 430 Menit
+
+[RUANG MULTIPLAYER]
+- ID Ruang (Room): #MONKE-772
+- Status Saluran Realtime: Siap
+- Saluran Aktif: monke_island_room_MONKE-772
+- Endpoint: wss://live-mesh.supabase.in/realtime/v1
+- Status Koneksi: Sandboxed (Mesin peer-to-peer aktif)
+
+[KONDISI PULAU]
+- Wilayah Saat Ini: Pulau Tier 1 (Ukuran 5x5 petak)
+- Penghuni: 1 Monki di Pulau
+- Waktu: Siang Hari
+- Status Karakter: Monki sedang siap belajar
+- Opsi Ekspansi: Tier 2 Tersedia (Upgrade ke 7x7 petak, muat hingga 3 teman)
+- Biaya Upgrade: 150 Koin
+
+[SISTEM TIMER POMODORO]
+- Sesi Berjalan: Sesi 1 dari 4
+- Pengaturan Waktu: 25:00
+- Mode: Fokus / Istirahat Panjang / Bebas
+- Kontrol Waktu: Tombol -5 Menit, Mulai Fokus, +5 Menit
+- Tugas Aktif: Tinjau Materi Pembelajaran
+
+[GENERATOR SUARA ALAMI (WEB AUDIO)]
+- Status Audio: Aktif
+- Hujan Tenang: Aktif (Volume: 45)
+- Api Unggun: Aktif (Volume: 40)
+
+[DAFTAR TUGAS BELAJAR]
+- Progress: 0 dari 0 tugas selesai
+- Kategori Prioritas: Tinggi, Sedang, Rendah
+
+[FITUR TAMBAHAN]
+1. Toko Dekorasi & Aksesoris Monki (Beli aksesoris & topi karakter)
+2. Check-in Harian & Riwayat Streak (+25 Koin klaim harian)
+3. Papan Peringkat Pelajar (Sinkronisasi real-time via Supabase)
+4. Ekspor Sesi Belajar (Format CSV)
+5. Cadangan Akun Penuh (Format JSON)
