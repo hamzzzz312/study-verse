@@ -1,0 +1,3516 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="raster">
+  <title>Study-Verse — Ruang Belajar Piksel &amp; Pulau Fokus 8-Bit</title>
+
+  <!-- Google Fonts: 8-Bit Pixel and Modern UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS 3.4.17 -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+  <!-- Lucide Icons 1.43.0 -->
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces */
+      --background: #f1f5f9;
+      --surface-container-low: #ffffff;
+      --surface-container: #e2e8f0;
+      --surface-container-high: #cbd5e1;
+
+      /* Ink */
+      --on-surface: #0f172a;
+      --on-surface-variant: #475569;
+
+      /* Rules and borders */
+      --outline: #0f172a;
+      --outline-variant: #94a3b8;
+
+      /* Accents */
+      --primary: #d01f17;
+      --on-primary: #ffffff;
+      --primary-container: #fee2e2;
+      --on-primary-container: #991b1b;
+      --secondary: #0284c7;
+      --tertiary: #16a34a;
+      --warning: #d97706;
+      --error: #b91c1c;
+      --on-error: #ffffff;
+
+      /* Fonts */
+      --font-headline: 'Press Start 2P', monospace;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-label: 'VT323', monospace;
+
+      /* Spacing scale */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* 8-bit styling */
+      --pixel-border: 2px solid #0f172a;
+      --pixel-border-thick: 3px solid #0f172a;
+      --pixel-shadow: 0 4px 0 #0f172a;
+      --pixel-shadow-sm: 0 2px 0 #0f172a;
+      --pixel-shadow-pressed: 0 1px 0 #0f172a;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--background);
+      color: var(--on-surface);
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+    }
+
+    .font-pixel {
+      font-family: var(--font-headline);
+    }
+
+    .font-retro {
+      font-family: var(--font-label);
+    }
+
+    /* Pixelated retro components */
+    .pixel-card {
+      background: var(--surface-container-low);
+      border: var(--pixel-border-thick);
+      box-shadow: var(--pixel-shadow);
+    }
+
+    .pixel-card-inset {
+      background: var(--surface-container);
+      border: var(--pixel-border);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .pixel-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: var(--font-headline);
+      font-size: 0.75rem;
+      line-height: 1rem;
+      padding: 0.6rem 1rem;
+      border: var(--pixel-border);
+      box-shadow: var(--pixel-shadow);
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.05s ease, box-shadow 0.05s ease;
+      min-height: 44px;
+    }
+
+    .pixel-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 0 #0f172a;
+    }
+
+    .pixel-btn:active {
+      transform: translateY(3px);
+      box-shadow: var(--pixel-shadow-pressed);
+    }
+
+    .pixel-btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.65rem;
+      min-height: 36px;
+    }
+
+    .pixel-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-headline);
+      font-size: 0.65rem;
+      padding: 0.25rem 0.5rem;
+      border: var(--pixel-border);
+      box-shadow: var(--pixel-shadow-sm);
+    }
+
+    .pixel-input {
+      border: var(--pixel-border);
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-body);
+      background: #ffffff;
+      outline: none;
+      box-shadow: inset 0 2px 2px rgba(0,0,0,0.05);
+    }
+
+    .pixel-input:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 1px;
+    }
+
+    /* Pixel Art Island Canvas */
+    #island-canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #0284c7;
+      border: var(--pixel-border-thick);
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+      cursor: crosshair;
+    }
+
+    /* CRT scanlines effect overlay */
+    .crt-overlay {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--surface-container);
+      border: 1px solid var(--outline);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--outline-variant);
+      border: 1px solid var(--outline);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--on-surface-variant);
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(2px);
+    }
+
+    /* Tab active indicator */
+    .tab-btn.active {
+      background-color: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-300 selection:text-black">
+
+  <!-- TOP BAR / HEADER -->
+  <header class="bg-slate-900 text-white border-b-4 border-slate-950 px-4 py-3 z-40">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <!-- Logo & App Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amber-500 border-2 border-white flex items-center justify-center text-slate-950 font-pixel text-lg shadow-[0_2px_0_#000]">
+          M
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-pixel text-xs tracking-wider text-amber-400">Ruang Belajar Piksel</span>
+            <span class="bg-emerald-600 text-white text-[9px] font-pixel px-1.5 py-0.5 border border-emerald-400">v2.6</span>
+          </div>
+          <h1 class="font-pixel text-sm sm:text-base text-white tracking-wide flex items-center gap-2">
+            Monke Study <span class="text-xs text-slate-400 font-sans font-normal hidden md:inline">| Study-Verse Island</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Quick Stats Badges -->
+      <div class="flex flex-wrap items-center gap-2 text-xs">
+        <!-- Coins -->
+        <div class="pixel-badge bg-amber-400 text-slate-950 font-bold border-amber-950" title="Koin Fokus Belajar">
+          <span>🪙</span>
+          <span id="header-coins">120</span>
+          <span class="hidden sm:inline">Koin</span>
+        </div>
+
+        <!-- Level & XP -->
+        <div class="pixel-badge bg-purple-600 text-white border-purple-950 cursor-pointer" onclick="openProfileModal()" title="Klik untuk membuka Profil">
+          <span>⭐</span>
+          <span>Level</span>
+          <span id="header-level">2</span>
+        </div>
+
+        <!-- Streak -->
+        <div class="pixel-badge bg-orange-500 text-white border-orange-950" title="Streak Kehadiran Harian">
+          <span>🔥</span>
+          <span id="header-streak">5</span>
+          <span>Hari</span>
+        </div>
+
+        <!-- Island Tier -->
+        <div class="pixel-badge bg-emerald-600 text-white border-emerald-950 hidden md:inline-flex">
+          <span>🏝️</span>
+          <span id="header-tier">Pulau Tier 1 (5x5)</span>
+        </div>
+
+        <!-- Players Count -->
+        <div class="pixel-badge bg-sky-600 text-white border-sky-950">
+          <span>👥</span>
+          <span id="header-players">1 Monki</span>
+        </div>
+      </div>
+
+      <!-- Action Icons / Quick Nav -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleAudioMute()" id="btn-audio-mute" class="p-2 bg-slate-800 hover:bg-slate-700 border-2 border-slate-600 text-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400" title="Suara Master ON/OFF" aria-label="Suara Master">
+          <i data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+        <button onclick="openColorModal()" class="p-2 bg-slate-800 hover:bg-slate-700 border-2 border-slate-600 text-pink-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400" title="Kustomisasi Warna & Tema" aria-label="Kustomisasi Warna">
+          <i data-lucide="palette" class="w-4 h-4"></i>
+        </button>
+        <button onclick="openSupabaseModal()" class="p-2 bg-slate-800 hover:bg-slate-700 border-2 border-slate-600 text-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" title="Konfigurasi Supabase Saluran" aria-label="Konfigurasi Supabase">
+          <i data-lucide="database" class="w-4 h-4"></i>
+        </button>
+        <button onclick="openProfileModal()" class="p-2 bg-slate-800 hover:bg-slate-700 border-2 border-slate-600 text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" title="Profil Pelajar" aria-label="Profil Pelajar">
+          <i data-lucide="user" class="w-4 h-4"></i>
+        </button>
+        <button onclick="startOnboardingTutorial(true)" class="p-2 bg-amber-500 hover:bg-amber-400 border-2 border-slate-950 text-slate-950 font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400" title="Panduan Tutorial Onboarding" aria-label="Panduan Tutorial">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ISLAND EXPANSION NOTIFICATION BANNER -->
+  <div id="expansion-banner" class="bg-amber-100 border-b-2 border-amber-400 px-4 py-2 text-xs text-amber-900 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+      <span class="font-pixel text-[10px] bg-amber-500 text-slate-950 px-1.5 py-0.5 border border-amber-700">INFO</span>
+      <span class="font-semibold" id="banner-text">Ekspansi Pulau: Tier 2 Tersedia — Tingkatkan luas tanah menjadi 7x7 petak dan muat hingga 3 teman.</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="switchTab('tab-expansion')" class="font-pixel text-[10px] bg-amber-400 hover:bg-amber-300 text-slate-950 px-2.5 py-1 border border-amber-900 shadow-[0_2px_0_#78350f]">
+        Tingkatkan Pulau
+      </button>
+      <button onclick="dismissBanner()" class="text-amber-800 hover:text-black font-bold px-1" aria-label="Tutup Pemberitahuan">✕</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto p-3 sm:p-5 space-y-6">
+
+    <!-- UPPER SECTION: ISLAND CANVAS & FOCUS COCKPIT -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+
+      <!-- LEFT / MAIN: ISOMETRIC PIXEL ART ISLAND CANVAS (7 COLS) -->
+      <div class="lg:col-span-7 flex flex-col gap-3">
+
+        <!-- Island Header Controls -->
+        <div class="pixel-card p-3 flex flex-wrap items-center justify-between gap-2 bg-white">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 bg-emerald-500 border border-slate-950 inline-block"></span>
+            <span id="monki-status-text" class="font-pixel text-[11px] text-slate-800">Monki sedang siap belajar</span>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center gap-2">
+            <button onclick="feedBanana()" class="pixel-btn pixel-btn-sm bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-pixel text-[10px]" title="Beri Makan Pisang untuk +25 XP dan Mood">
+              🍌 Beri Pisang (<span id="btn-banana-count">5</span>)
+            </button>
+            <button onclick="openColorModal()" class="pixel-btn pixel-btn-sm bg-indigo-100 hover:bg-indigo-200 text-indigo-900 font-pixel text-[10px]" title="Kustomisasi Warna Fur & Pulau">
+              🎨 Warna
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="relative w-full aspect-[16/10] min-h-[340px] sm:min-h-[400px] overflow-hidden rounded-none pixel-card bg-sky-600">
+          <canvas id="island-canvas" class="w-full h-full block" width="640" height="400" aria-label="Kanvas Pulau Piksel Isometrik"></canvas>
+          <div class="crt-overlay absolute inset-0 pointer-events-none"></div>
+
+          <!-- Floating Island Badges -->
+          <div class="absolute top-3 left-3 flex flex-col gap-1 pointer-events-none">
+            <div class="pixel-badge bg-slate-900/90 text-amber-300 text-[9px] border-slate-950">
+              <span id="canvas-tier-badge">Tier 1: 5x5 Petak</span>
+            </div>
+            <div class="pixel-badge bg-slate-900/90 text-emerald-300 text-[9px] border-slate-950">
+              <span id="canvas-theme-badge">Tema: Musim Semi Zamrud</span>
+            </div>
+          </div>
+
+          <!-- Canvas Hint / Interaction Pill -->
+          <div class="absolute bottom-3 left-3 bg-slate-900/80 text-white font-pixel text-[9px] px-2 py-1 border border-slate-700 pointer-events-none">
+            💡 Tips: Klik teman untuk mengelola / keluarkan
+          </div>
+
+          <!-- Real-Time Floating Emoji Reaction Bar -->
+          <div class="absolute bottom-3 right-3 bg-slate-900/90 border-2 border-slate-950 p-1.5 flex items-center gap-1 shadow-[0_2px_0_#000]">
+            <button onclick="triggerEmojiReaction('🍌')" class="hover:scale-125 transition-transform text-sm p-1" title="Pisang">🍌</button>
+            <button onclick="triggerEmojiReaction('📚')" class="hover:scale-125 transition-transform text-sm p-1" title="Buku">📚</button>
+            <button onclick="triggerEmojiReaction('🔥')" class="hover:scale-125 transition-transform text-sm p-1" title="Semangat">🔥</button>
+            <button onclick="triggerEmojiReaction('☕')" class="hover:scale-125 transition-transform text-sm p-1" title="Kopi">☕</button>
+            <button onclick="triggerEmojiReaction('⭐')" class="hover:scale-125 transition-transform text-sm p-1" title="Bintang">⭐</button>
+            <button onclick="triggerEmojiReaction('🎉')" class="hover:scale-125 transition-transform text-sm p-1" title="Pesta">🎉</button>
+            <button onclick="triggerEmojiReaction('💤')" class="hover:scale-125 transition-transform text-sm p-1" title="Tidur">💤</button>
+            <button onclick="triggerEmojiReaction('❤️')" class="hover:scale-125 transition-transform text-sm p-1" title="Cinta">❤️</button>
+          </div>
+        </div>
+
+        <!-- Monki Vitals: Happiness Meter & XP Progress -->
+        <div class="pixel-card p-3 bg-white grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <!-- Happiness / Mood Bar -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-pixel text-[10px] text-pink-700 flex items-center gap-1">
+                <span>❤️</span> Kebahagiaan Monki
+              </span>
+              <span id="happiness-val" class="font-pixel text-[10px] text-pink-700">85%</span>
+            </div>
+            <div class="w-full bg-slate-200 border-2 border-slate-900 h-4 p-0.5 shadow-inner">
+              <div id="happiness-bar" class="h-full bg-pink-500 transition-all duration-300" style="width: 85%;"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">Beri makan pisang agar Monki tetap bersemangat dan fokus!</p>
+          </div>
+
+          <!-- XP & Level Progress -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-pixel text-[10px] text-purple-700 flex items-center gap-1">
+                <span>⭐</span> Progres Level <span id="vitals-level-num">2</span>
+              </span>
+              <span id="xp-val" class="font-pixel text-[10px] text-purple-700">65 / 100 XP</span>
+            </div>
+            <div class="w-full bg-slate-200 border-2 border-slate-900 h-4 p-0.5 shadow-inner">
+              <div id="xp-bar" class="h-full bg-purple-600 transition-all duration-300" style="width: 65%;"></div>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">Dapatkan XP dari sesi Pomodoro dan kuis latihan!</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: FOCUS TIMER & MULTIPLAYER CONTROLS (5 COLS) -->
+      <div class="lg:col-span-5 flex flex-col gap-4">
+
+        <!-- 1. POMODORO TIMER PANEL -->
+        <div class="pixel-card p-4 bg-slate-900 text-white border-slate-950">
+          <div class="flex items-center justify-between pb-3 border-b-2 border-slate-800 mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-amber-400">⏱️</span>
+              <h2 class="font-pixel text-xs text-amber-400 tracking-wider">Timer Fokus</h2>
+            </div>
+            <span id="pomodoro-cycle" class="font-pixel text-[10px] bg-slate-800 text-amber-300 px-2 py-0.5 border border-slate-700">
+              Sesi 1 dari 4
+            </span>
+          </div>
+
+          <!-- Timer Mode Selector Tabs -->
+          <div class="grid grid-cols-3 gap-1.5 mb-4">
+            <button onclick="setTimerMode('focus')" id="mode-focus-btn" class="font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-amber-500 text-slate-950 shadow-[0_2px_0_#000]">
+              Fokus (25m)
+            </button>
+            <button onclick="setTimerMode('shortBreak')" id="mode-short-btn" class="font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-slate-800 text-slate-300 hover:text-white">
+              Istirahat (5m)
+            </button>
+            <button onclick="setTimerMode('longBreak')" id="mode-long-btn" class="font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-slate-800 text-slate-300 hover:text-white">
+              Panjang (15m)
+            </button>
+          </div>
+
+          <!-- Giant Digital 8-Bit Countdown Display -->
+          <div class="pixel-card-inset bg-slate-950 p-4 text-center my-2 border-2 border-slate-700">
+            <div id="timer-display" class="font-pixel text-4xl sm:text-5xl text-emerald-400 tracking-widest drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]">
+              25:00
+            </div>
+            <div class="mt-2 flex items-center justify-center gap-2 text-xs">
+              <span class="text-slate-400">Tugas Aktif:</span>
+              <span id="active-task-badge" class="font-semibold text-amber-300 bg-amber-950/60 px-2 py-0.5 border border-amber-800 truncate max-w-[200px]">
+                Tinjau Materi Pembelajaran
+              </span>
+            </div>
+          </div>
+
+          <!-- Timer Action Buttons -->
+          <div class="grid grid-cols-3 gap-2 mt-4">
+            <button onclick="toggleTimer()" id="timer-start-btn" class="pixel-btn bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-pixel text-[10px] col-span-2">
+              <i data-lucide="play" class="w-4 h-4"></i>
+              <span id="timer-start-text">Mulai Fokus</span>
+            </button>
+            <button onclick="resetTimer()" class="pixel-btn bg-slate-800 hover:bg-slate-700 text-white font-pixel text-[10px]">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <div class="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Selesaikan 1 sesi = +20 Koin &amp; +25 XP</span>
+            <button onclick="skipTimerSession()" class="text-amber-400 hover:underline text-[10px]">Lewati Sesi ⏩</button>
+          </div>
+        </div>
+
+        <!-- 2. NATURAL SOUND GENERATOR (WEB AUDIO API) -->
+        <div class="pixel-card p-3.5 bg-white border-slate-950">
+          <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200 mb-2">
+            <div class="flex items-center gap-1.5">
+              <span>🎧</span>
+              <h3 class="font-pixel text-[11px] text-slate-900">Generator Suara Alami (Web Audio)</h3>
+            </div>
+            <span class="text-[10px] font-retro text-emerald-700 bg-emerald-100 px-1.5 py-0.5 border border-emerald-300">Sintesis Murni</span>
+          </div>
+
+          <div class="space-y-2.5 text-xs">
+            <!-- Rain Sound -->
+            <div class="flex items-center justify-between gap-2">
+              <button onclick="toggleAmbientSound('rain')" id="btn-sound-rain" class="pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] min-w-[125px]">
+                🌧️ <span id="label-sound-rain">Hujan Tenang</span>
+              </button>
+              <div class="flex items-center gap-1.5 flex-grow">
+                <span class="text-[10px] text-slate-500">Vol</span>
+                <input type="range" id="vol-rain" min="0" max="100" value="50" oninput="updateSoundVolume('rain', this.value)" class="w-full accent-sky-600 h-2 bg-slate-200 rounded-none cursor-pointer" aria-label="Volume Hujan">
+              </div>
+            </div>
+
+            <!-- Campfire Sound -->
+            <div class="flex items-center justify-between gap-2">
+              <button onclick="toggleAmbientSound('campfire')" id="btn-sound-campfire" class="pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] min-w-[125px]">
+                🔥 <span id="label-sound-campfire">Api Unggun</span>
+              </button>
+              <div class="flex items-center gap-1.5 flex-grow">
+                <span class="text-[10px] text-slate-500">Vol</span>
+                <input type="range" id="vol-campfire" min="0" max="100" value="50" oninput="updateSoundVolume('campfire', this.value)" class="w-full accent-orange-600 h-2 bg-slate-200 rounded-none cursor-pointer" aria-label="Volume Api Unggun">
+              </div>
+            </div>
+
+            <!-- Retro Cafe Sound -->
+            <div class="flex items-center justify-between gap-2">
+              <button onclick="toggleAmbientSound('cafe')" id="btn-sound-cafe" class="pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] min-w-[125px]">
+                ☕ <span id="label-sound-cafe">Kafe Retro</span>
+              </button>
+              <div class="flex items-center gap-1.5 flex-grow">
+                <span class="text-[10px] text-slate-500">Vol</span>
+                <input type="range" id="vol-cafe" min="0" max="100" value="40" oninput="updateSoundVolume('cafe', this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-none cursor-pointer" aria-label="Volume Kafe Retro">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. MULTIPLAYER ROOM & FRIENDS MANAGER (WITH KICK PLAYER) -->
+        <div class="pixel-card p-3.5 bg-white border-slate-950">
+          <div class="flex items-center justify-between pb-2 border-b-2 border-slate-200 mb-2">
+            <div class="flex items-center gap-1.5">
+              <span>👥</span>
+              <h3 class="font-pixel text-[11px] text-slate-900">Ruang Multiplayer Supabase</h3>
+            </div>
+            <div class="flex items-center gap-1 text-[9px] font-pixel text-emerald-700 bg-emerald-50 px-1.5 py-0.5 border border-emerald-300">
+              <span class="w-2 h-2 bg-emerald-500 border border-emerald-700 inline-block"></span>
+              <span>Realtime: Siap</span>
+            </div>
+          </div>
+
+          <!-- Room Code Box -->
+          <div class="bg-slate-100 p-2 border-2 border-slate-300 flex items-center justify-between mb-2.5">
+            <div>
+              <span class="text-[10px] text-slate-500 block">Kode Room Unik</span>
+              <span id="room-code-display" class="font-pixel text-xs text-slate-900 font-bold">MONKE-772</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="copyRoomCode()" class="pixel-btn pixel-btn-sm bg-sky-500 hover:bg-sky-400 text-white font-pixel text-[9px]">
+                Salin
+              </button>
+              <button onclick="generateNewRoomCode()" class="pixel-btn pixel-btn-sm bg-slate-200 hover:bg-slate-300 text-slate-900 font-pixel text-[9px]" title="Buat Room Baru">
+                Baru
+              </button>
+            </div>
+          </div>
+
+          <!-- Members On Island (STARTS EMPTY - ONLY MAIN USER) -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[11px] font-semibold text-slate-700">
+                Teman di Pulau Saat Ini (<span id="room-member-count">1</span>)
+              </span>
+              <button onclick="simulateJoinRequest()" class="text-[10px] text-sky-600 hover:underline font-medium">
+                + Simulasi Permintaan Teman
+              </button>
+            </div>
+
+            <!-- Members List with KICK Button for guests -->
+            <div id="room-members-container" class="space-y-1.5 max-h-[140px] overflow-y-auto pr-1">
+              <!-- Rendered via JS: Main Host + any guests -->
+            </div>
+          </div>
+
+          <!-- Private Island Join Request Modal Notification Trigger -->
+          <div id="join-request-banner" class="hidden mt-2.5 p-2 bg-yellow-50 border-2 border-yellow-400 text-yellow-900 text-xs flex items-center justify-between gap-2">
+            <div>
+              <span class="font-pixel text-[9px] text-yellow-800 block">🔔 Permintaan Masuk:</span>
+              <span id="join-request-name" class="font-semibold">Budi Monki ingin bergabung!</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button onclick="acceptJoinRequest()" class="pixel-btn pixel-btn-sm bg-emerald-500 hover:bg-emerald-400 text-white text-[9px]">
+                Terima
+              </button>
+              <button onclick="declineJoinRequest()" class="pixel-btn pixel-btn-sm bg-rose-500 hover:bg-rose-400 text-white text-[9px]">
+                Tolak
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- LOWER SECTION: TABBED SUITE OF FEATURES -->
+    <div class="pixel-card bg-white p-4">
+
+      <!-- Navigation Tabs -->
+      <div class="flex flex-wrap items-center gap-1.5 border-b-2 border-slate-900 pb-3 mb-4">
+        <button onclick="switchTab('tab-expansion')" id="btn-tab-expansion" class="tab-btn pixel-btn pixel-btn-sm bg-slate-900 text-white active">
+          🏝️ Sistem Ekspansi
+        </button>
+        <button onclick="switchTab('tab-shop')" id="btn-tab-shop" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          🛍️ Toko Dekorasi
+        </button>
+        <button onclick="switchTab('tab-tasks')" id="btn-tab-tasks" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          📝 Daftar Tugas
+        </button>
+        <button onclick="switchTab('tab-streak')" id="btn-tab-streak" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          🔥 Check-in &amp; Streak
+        </button>
+        <button onclick="switchTab('tab-quiz')" id="btn-tab-quiz" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          🎮 Kuis &amp; Flashcard
+        </button>
+        <button onclick="switchTab('tab-wellness')" id="btn-tab-wellness" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          💧 Pengingat Kebugaran
+        </button>
+        <button onclick="switchTab('tab-leaderboard')" id="btn-tab-leaderboard" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          🏆 Papan Peringkat
+        </button>
+        <button onclick="switchTab('tab-backup')" id="btn-tab-backup" class="tab-btn pixel-btn pixel-btn-sm bg-slate-100 hover:bg-slate-200 text-slate-900">
+          💾 Ekspor &amp; Cadangan
+        </button>
+      </div>
+
+      <!-- TAB 1: SISTEM EKSPANSI PULAU PIKSEL -->
+      <div id="tab-expansion" class="tab-content space-y-4">
+        <div class="border-l-4 border-amber-500 pl-3">
+          <h3 class="font-pixel text-xs text-slate-900">Sistem Ekspansi Pulau Piksel</h3>
+          <p class="text-xs text-slate-600 mt-0.5">
+            Perluas petak tanah pulau menggunakan koin hasil fokus belajar atau saat level fokus meningkat. Petak yang lebih luas membuka tempat dekorasi baru dan menampung lebih banyak monki teman!
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <!-- Tier 1 -->
+          <div class="pixel-card p-3.5 bg-emerald-50 border-emerald-900 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="font-pixel text-xs text-emerald-900">Tier 1</span>
+                <span class="pixel-badge bg-emerald-600 text-white text-[9px]">Aktif</span>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900">Pulau Pemula (5x5)</h4>
+              <ul class="text-xs text-slate-600 mt-2 space-y-1 list-disc list-inside">
+                <li>Luas 25 petak tanah</li>
+                <li>Maksimal 1 Monki (Fokus Solo)</li>
+                <li>2 Slot Dekorasi dasar</li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-2 border-t border-emerald-300">
+              <span class="text-xs font-semibold text-emerald-800">Status: Sedang Digunakan</span>
+            </div>
+          </div>
+
+          <!-- Tier 2 -->
+          <div class="pixel-card p-3.5 bg-white border-slate-900 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="font-pixel text-xs text-slate-900">Tier 2</span>
+                <span class="pixel-badge bg-amber-400 text-slate-950 text-[9px]">Tersedia</span>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900">Pulau Kelompok (7x7)</h4>
+              <ul class="text-xs text-slate-600 mt-2 space-y-1 list-disc list-inside">
+                <li>Luas 49 petak tanah</li>
+                <li>Muat hingga 3 teman monki</li>
+                <li>4 Slot Dekorasi interaktif</li>
+                <li>Fitur Api Unggun &amp; Meja Tambahan</li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-2 border-t border-slate-200">
+              <button onclick="upgradeIslandTier(2, 150)" id="btn-upgrade-t2" class="pixel-btn pixel-btn-sm w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-pixel text-[9px]">
+                Upgrade: 150 🪙
+              </button>
+            </div>
+          </div>
+
+          <!-- Tier 3 -->
+          <div class="pixel-card p-3.5 bg-white border-slate-900 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="font-pixel text-xs text-slate-900">Tier 3</span>
+                <span class="pixel-badge bg-slate-300 text-slate-700 text-[9px]">Terkunci</span>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900">Pulau Komunitas (9x9)</h4>
+              <ul class="text-xs text-slate-600 mt-2 space-y-1 list-disc list-inside">
+                <li>Luas 81 petak tanah</li>
+                <li>Muat hingga 6 teman monki</li>
+                <li>6 Slot Dekorasi &amp; Pohon Sakura</li>
+                <li>Tepian pantai berpasir emas</li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-2 border-t border-slate-200">
+              <button onclick="upgradeIslandTier(3, 300)" id="btn-upgrade-t3" class="pixel-btn pixel-btn-sm w-full bg-slate-200 text-slate-500 font-pixel text-[9px]" disabled>
+                Upgrade: 300 🪙
+              </button>
+            </div>
+          </div>
+
+          <!-- Tier 4 -->
+          <div class="pixel-card p-3.5 bg-white border-slate-900 flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-2">
+                <span class="font-pixel text-xs text-slate-900">Tier 4</span>
+                <span class="pixel-badge bg-slate-300 text-slate-700 text-[9px]">Legendaris</span>
+              </div>
+              <h4 class="font-bold text-sm text-slate-900">Pulau Metapolis (11x11)</h4>
+              <ul class="text-xs text-slate-600 mt-2 space-y-1 list-disc list-inside">
+                <li>Luas 121 petak tanah</li>
+                <li>Muat hingga 10 teman monki</li>
+                <li>Semua dekorasi tidak terbatas</li>
+                <li>Pancuran air &amp; Jukebox Lo-Fi</li>
+              </ul>
+            </div>
+            <div class="mt-4 pt-2 border-t border-slate-200">
+              <button onclick="upgradeIslandTier(4, 600)" id="btn-upgrade-t4" class="pixel-btn pixel-btn-sm w-full bg-slate-200 text-slate-500 font-pixel text-[9px]" disabled>
+                Upgrade: 600 🪙
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: TOKO DEKORASI & AKSESORIS MONKI -->
+      <div id="tab-shop" class="tab-content hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-l-4 border-yellow-500 pl-3">
+          <div>
+            <h3 class="font-pixel text-xs text-slate-900">Toko Dekorasi &amp; Aksesoris Monki</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Beli dekorasi pulau interaktif dan lengkapi karakter monki Anda dengan topi atau aksesoris belajar.</p>
+          </div>
+          <div class="pixel-badge bg-amber-400 text-slate-950 font-bold">
+            Saldo: <span id="shop-coin-balance">120</span> Koin
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" id="shop-items-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- TAB 3: DAFTAR TUGAS BELAJAR (TO-DO) -->
+      <div id="tab-tasks" class="tab-content hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-l-4 border-sky-500 pl-3">
+          <div>
+            <h3 class="font-pixel text-xs text-slate-900">Daftar Tugas Belajar</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Tentukan target prioritas dan hubungkan tugas langsung dengan timer fokus Pomodoro.</p>
+          </div>
+          <span id="task-completed-counter" class="text-xs font-semibold text-sky-700 bg-sky-50 px-2 py-1 border border-sky-300">
+            1 dari 3 tugas selesai
+          </span>
+        </div>
+
+        <!-- Add Task Form -->
+        <form onsubmit="addNewTask(event)" class="pixel-card-inset p-3 bg-slate-50 flex flex-wrap gap-2 items-center">
+          <input type="text" id="new-task-input" placeholder="Tuliskan tugas belajar baru (cth: Latihan Matematika)..." class="pixel-input flex-grow text-xs" required>
+          
+          <select id="new-task-priority" class="pixel-input text-xs" aria-label="Prioritas Tugas">
+            <option value="high">Prioritas: Tinggi 🔥</option>
+            <option value="medium" selected>Prioritas: Sedang ⚡</option>
+            <option value="low">Prioritas: Rendah 🌿</option>
+          </select>
+
+          <select id="new-task-pomo" class="pixel-input text-xs" aria-label="Estimasi Pomodoro">
+            <option value="1">1 Pomodoro (25m)</option>
+            <option value="2" selected>2 Pomodoro (50m)</option>
+            <option value="3">3 Pomodoro (75m)</option>
+            <option value="4">4 Pomodoro (100m)</option>
+          </select>
+
+          <button type="submit" class="pixel-btn pixel-btn-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-pixel text-[10px]">
+            + Tambah
+          </button>
+        </form>
+
+        <!-- Tasks List -->
+        <div id="tasks-list-container" class="space-y-2">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- TAB 4: CHECK-IN HARIAN & RIWAYAT STREAK -->
+      <div id="tab-streak" class="tab-content hidden space-y-4">
+        <div class="border-l-4 border-orange-500 pl-3">
+          <h3 class="font-pixel text-xs text-slate-900">Check-in Harian &amp; Riwayat Streak</h3>
+          <p class="text-xs text-slate-600 mt-0.5">Disiplin konsisten setiap hari untuk menjaga streak belajar dan mengklaim hadiah koin harian.</p>
+        </div>
+
+        <!-- Streak Stats Summary -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="pixel-card p-3 bg-orange-50 border-orange-900">
+            <span class="text-xs text-orange-800 block">Streak Aktif</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="streak-card-active" class="font-pixel text-2xl text-orange-600">5</span>
+              <span class="text-xs text-orange-700">Hari</span>
+            </div>
+            <p class="text-[10px] text-orange-600 mt-1">Terus jaga kehadiran harian Anda.</p>
+          </div>
+
+          <div class="pixel-card p-3 bg-amber-50 border-amber-900">
+            <span class="text-xs text-amber-800 block">Rekor Streak Terpanjang</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="streak-card-longest" class="font-pixel text-2xl text-amber-600">12</span>
+              <span class="text-xs text-amber-700">Hari</span>
+            </div>
+            <p class="text-[10px] text-amber-600 mt-1">Pencapaian konsistensi tertinggi.</p>
+          </div>
+
+          <div class="pixel-card p-3 bg-sky-50 border-sky-900">
+            <span class="text-xs text-sky-800 block">Total Menit Fokus</span>
+            <div class="flex items-baseline gap-2 mt-1">
+              <span id="streak-card-minutes" class="font-pixel text-2xl text-sky-600">430</span>
+              <span class="text-xs text-sky-700">Menit</span>
+            </div>
+            <p class="text-[10px] text-sky-600 mt-1">Akumulasi waktu belajar terverifikasi.</p>
+          </div>
+        </div>
+
+        <!-- Weekly Calendar -->
+        <div class="pixel-card p-4 bg-white border-slate-900">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-pixel text-[11px] text-slate-800">Minggu Berjalan:</h4>
+            <button onclick="claimDailyReward()" id="btn-claim-daily" class="pixel-btn pixel-btn-sm bg-amber-400 hover:bg-amber-300 text-slate-950 font-pixel text-[10px]">
+              🎁 Klaim Hadiah Harian (+50 Koin)
+            </button>
+          </div>
+
+          <div class="grid grid-cols-7 gap-2 text-center" id="weekly-calendar-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: MINI-GAME KUIS & FLASHCARD PIKSEL -->
+      <div id="tab-quiz" class="tab-content hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-l-4 border-purple-500 pl-3">
+          <div>
+            <h3 class="font-pixel text-xs text-slate-900">Mini-game Kuis &amp; Flashcard Piksel</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Asah pemahaman materi kurikulum Indonesia (SMP - SMA). Jawab benar untuk mendapat koin dan XP!</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <select id="quiz-subject-select" onchange="loadQuizSubject(this.value)" class="pixel-input text-xs" aria-label="Pilih Mata Pelajaran">
+              <option value="all">Semua Mapel</option>
+              <option value="matematika">Matematika</option>
+              <option value="ipa">IPA / Fisika</option>
+              <option value="biologi">Biologi</option>
+              <option value="bahasa_indonesia">Bahasa Indonesia</option>
+              <option value="bahasa_inggris">Bahasa Inggris</option>
+              <option value="sejarah">Sejarah</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Quiz Flashcard Box -->
+        <div class="max-w-2xl mx-auto pixel-card p-5 bg-slate-900 text-white border-slate-950 text-center">
+          <div class="flex items-center justify-between text-xs pb-3 border-b border-slate-800 mb-3">
+            <span id="quiz-subject-tag" class="font-pixel text-[9px] bg-purple-700 text-white px-2 py-0.5">Matematika • Kelas 8 SMP</span>
+            <span id="quiz-score-streak" class="font-pixel text-[9px] text-amber-400">Streak Kuis: 3 🔥</span>
+          </div>
+
+          <div class="my-4 min-h-[90px] flex items-center justify-center">
+            <p id="quiz-question-text" class="font-pixel text-xs sm:text-sm text-slate-100 leading-relaxed">
+              Jika 3x + 7 = 22, berapakah nilai dari x?
+            </p>
+          </div>
+
+          <!-- Answer Options Grid -->
+          <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 my-3 text-left">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- Explanation Feedback Box -->
+          <div id="quiz-feedback-box" class="hidden mt-3 p-2.5 text-xs text-left border-2">
+            <!-- Populated via JS -->
+          </div>
+
+          <!-- Next Button -->
+          <div class="mt-4 flex justify-end">
+            <button onclick="nextQuizQuestion()" id="btn-next-quiz" class="pixel-btn pixel-btn-sm bg-purple-600 hover:bg-purple-500 text-white font-pixel text-[10px]">
+              Soal Selanjutnya ➡️
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 6: PENGINGAT KEBUGARAN / WELLNESS -->
+      <div id="tab-wellness" class="tab-content hidden space-y-4">
+        <div class="border-l-4 border-teal-500 pl-3">
+          <h3 class="font-pixel text-xs text-slate-900">Pengingat Kebugaran &amp; Postur Pelajar</h3>
+          <p class="text-xs text-slate-600 mt-0.5">Keseimbangan fisik adalah kunci fokus belajar jangka panjang. Pantau konsumsi air dan peregangan.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- 1. Water Tracker -->
+          <div class="pixel-card p-4 bg-cyan-50 border-cyan-900 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-pixel text-[11px] text-cyan-950">💧 Konsumsi Air Putih</h4>
+                <span id="water-fraction" class="font-pixel text-xs text-cyan-700">5 / 8 Gelas</span>
+              </div>
+              <p class="text-xs text-cyan-800">Target harian: 2000 ml untuk konsentrasi maksimal otak.</p>
+              
+              <div class="flex gap-1.5 my-3" id="water-glasses-icons">
+                <!-- 8 glasses rendered via JS -->
+              </div>
+            </div>
+
+            <button onclick="logWaterGlass()" class="pixel-btn pixel-btn-sm bg-cyan-600 hover:bg-cyan-500 text-white font-pixel text-[9px] w-full">
+              + Minum 1 Gelas Air
+            </button>
+          </div>
+
+          <!-- 2. Stretching & Posture Guide -->
+          <div class="pixel-card p-4 bg-emerald-50 border-emerald-900 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-pixel text-[11px] text-emerald-950">🧘 Peregangan Bahu</h4>
+                <span class="pixel-badge bg-emerald-600 text-white text-[9px]">30 Detik</span>
+              </div>
+              <p class="text-xs text-emerald-800">Tarik bahu ke belakang, putar leher perlahan, dan tegakkan tulang punggung.</p>
+              
+              <div class="p-2 bg-white/80 border border-emerald-300 text-[11px] text-emerald-900 my-2">
+                1. Putar leher kiri &amp; kanan 10x<br>
+                2. Angkat tangan tinggi ke atas<br>
+                3. Tarik nafas dalam 4 detik
+              </div>
+            </div>
+
+            <button onclick="completeStretching()" class="pixel-btn pixel-btn-sm bg-emerald-600 hover:bg-emerald-500 text-white font-pixel text-[9px] w-full">
+              ✓ Selesai Peregangan
+            </button>
+          </div>
+
+          <!-- 3. 20-20-20 Eye Rest Rule -->
+          <div class="pixel-card p-4 bg-indigo-50 border-indigo-900 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-pixel text-[11px] text-indigo-950">👀 Istirahat Mata (20-20-20)</h4>
+                <span class="pixel-badge bg-indigo-600 text-white text-[9px]">Kesehatan Mata</span>
+              </div>
+              <p class="text-xs text-indigo-800">Setiap 20 menit layar, pandang objek berjarak 20 kaki (6 meter) selama 20 detik.</p>
+              
+              <div class="p-2.5 bg-white/80 border border-indigo-300 text-center my-2">
+                <span id="eye-timer-display" class="font-pixel text-lg text-indigo-900">20 Detik</span>
+                <span class="text-[10px] text-slate-500 block">Relaksasi otot fokus mata</span>
+              </div>
+            </div>
+
+            <button onclick="startEyeRestTimer()" id="btn-eye-rest" class="pixel-btn pixel-btn-sm bg-indigo-600 hover:bg-indigo-500 text-white font-pixel text-[9px] w-full">
+              Mulai Istirahat Mata
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 7: PAPAN PERINGKAT PELAJAR (LEADERBOARD) -->
+      <div id="tab-leaderboard" class="tab-content hidden space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-l-4 border-amber-500 pl-3">
+          <div>
+            <h3 class="font-pixel text-xs text-slate-900">Papan Peringkat Pelajar</h3>
+            <p class="text-xs text-slate-600 mt-0.5">Sinkronisasi data skor belajar secara real-time via saluran basis data Supabase.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="syncLeaderboardToSupabase()" class="pixel-btn pixel-btn-sm bg-emerald-600 hover:bg-emerald-500 text-white font-pixel text-[9px]">
+              🔄 Sinkronkan Skor
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto border-2 border-slate-900">
+          <table class="w-full text-left text-xs bg-white">
+            <thead class="bg-slate-900 text-white font-pixel text-[9px]">
+              <tr>
+                <th class="p-2.5">Posisi</th>
+                <th class="p-2.5">Nama Pelajar &amp; Monki</th>
+                <th class="p-2.5">Status / Tugas</th>
+                <th class="p-2.5 text-right">Menit Fokus</th>
+                <th class="p-2.5 text-right">Streak</th>
+                <th class="p-2.5 text-center">Tier Pulau</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-table-body" class="divide-y divide-slate-200">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 8: EKSPOR RIWAYAT & CADANGAN DATA -->
+      <div id="tab-backup" class="tab-content hidden space-y-4">
+        <div class="border-l-4 border-slate-700 pl-3">
+          <h3 class="font-pixel text-xs text-slate-900">Ekspor Riwayat &amp; Cadangan Data</h3>
+          <p class="text-xs text-slate-600 mt-0.5">Unduh riwayat sesi belajar dalam format CSV untuk analisis spreadsheet atau cadangkan status akun dalam format JSON.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- CSV Export -->
+          <div class="pixel-card p-4 bg-slate-50 border-slate-900">
+            <h4 class="font-bold text-sm text-slate-900 mb-1">Ekspor Sesi Belajar (CSV)</h4>
+            <p class="text-xs text-slate-600 mb-3">Berisi tabel catatan tanggal, waktu mulai, durasi menit, nama tugas terkait, dan koin yang berhasil dikumpulkan.</p>
+            <button onclick="exportHistoryCSV()" class="pixel-btn pixel-btn-sm bg-sky-600 hover:bg-sky-500 text-white font-pixel text-[9px] w-full">
+              📥 Unduh Berkas CSV
+            </button>
+          </div>
+
+          <!-- JSON Backup -->
+          <div class="pixel-card p-4 bg-slate-50 border-slate-900">
+            <h4 class="font-bold text-sm text-slate-900 mb-1">Cadangan Akun Penuh (JSON)</h4>
+            <p class="text-xs text-slate-600 mb-3">Menyimpan seluruh konfigurasi pulau, tier ekspansi, dekorasi yang dimiliki, streak, dan daftar tugas ke berkas JSON.</p>
+            <button onclick="exportStateJSON()" class="pixel-btn pixel-btn-sm bg-emerald-600 hover:bg-emerald-500 text-white font-pixel text-[9px] w-full">
+              💾 Unduh Cadangan JSON
+            </button>
+          </div>
+
+          <!-- Reset Session History -->
+          <div class="pixel-card p-4 bg-red-50 border-red-900">
+            <h4 class="font-bold text-sm text-red-900 mb-1">Reset Riwayat Sesi</h4>
+            <p class="text-xs text-red-700 mb-3">Atur ulang data sesi belajar saat ini jika ingin memulai dari awal dengan pulau baru.</p>
+            <button onclick="confirmResetHistory()" class="pixel-btn pixel-btn-sm bg-red-600 hover:bg-red-500 text-white font-pixel text-[9px] w-full">
+              ⚠️ Reset Riwayat Sesi
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-slate-950 text-slate-400 text-xs py-4 px-4 border-t-4 border-slate-900 mt-6">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-center sm:text-left">
+      <div class="flex items-center gap-2">
+        <span class="font-pixel text-[10px] text-amber-400">Study-Verse</span>
+        <span>• Pulau Belajar Isometrik 8-Bit Pelajar Indonesia</span>
+      </div>
+      <div class="text-[11px] text-slate-500">
+        Disinkronkan dengan Saluran Supabase Realtime • Versi 2.6
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS & POPUPS ==================== -->
+
+  <!-- 1. COLOR & PALETTE CUSTOMIZATION MODAL -->
+  <div id="modal-color" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 modal-backdrop">
+    <div class="pixel-card bg-white max-w-lg w-full p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b-2 border-slate-900">
+        <div class="flex items-center gap-2">
+          <span>🎨</span>
+          <h3 class="font-pixel text-xs text-slate-900">Kustomisasi Monki &amp; Tema Pulau</h3>
+        </div>
+        <button onclick="closeColorModal()" class="text-slate-500 hover:text-black font-bold p-1 text-sm" aria-label="Tutup Modal Kustomisasi">✕</button>
+      </div>
+
+      <!-- Fur Color Picker -->
+      <div>
+        <label class="font-pixel text-[10px] text-slate-800 block mb-2">1. Warna Bulu Karakter Monki:</label>
+        <div class="grid grid-cols-3 gap-2" id="fur-color-palette">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Outfit Color Picker -->
+      <div>
+        <label class="font-pixel text-[10px] text-slate-800 block mb-2">2. Warna Pakaian Belajar:</label>
+        <div class="grid grid-cols-3 gap-2" id="outfit-color-palette">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Island Theme Palette Picker -->
+      <div>
+        <label class="font-pixel text-[10px] text-slate-800 block mb-2">3. Tema Palet Pulau Piksel:</label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="island-theme-palette">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="pt-3 border-t-2 border-slate-200 flex justify-end">
+        <button onclick="closeColorModal()" class="pixel-btn bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-pixel text-[10px]">
+          Simpan Kustomisasi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. USER PROFILE & REGISTRATION MODAL -->
+  <div id="modal-profile" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 modal-backdrop">
+    <div class="pixel-card bg-white max-w-md w-full p-5 space-y-3.5 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b-2 border-slate-900">
+        <div class="flex items-center gap-2">
+          <span>👤</span>
+          <h3 class="font-pixel text-xs text-slate-900">Profil &amp; Pendaftaran Pelajar</h3>
+        </div>
+        <button onclick="closeProfileModal()" class="text-slate-500 hover:text-black font-bold p-1 text-sm" aria-label="Tutup Profil">✕</button>
+      </div>
+
+      <form onsubmit="saveUserProfile(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Nama Pelajar:</label>
+          <input type="text" id="prof-student-name" class="pixel-input w-full text-xs" required>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Nama Karakter Monki:</label>
+          <input type="text" id="prof-monki-name" class="pixel-input w-full text-xs" required>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Level Saat Ini:</label>
+            <input type="text" id="prof-level-display" class="pixel-input w-full text-xs bg-slate-100" readonly>
+          </div>
+          <div>
+            <label class="font-bold text-slate-700 block mb-1">Tanggal Bergabung:</label>
+            <input type="text" id="prof-join-date" class="pixel-input w-full text-xs bg-slate-100" readonly>
+          </div>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Jenjang Sekolah (1 SMP - 3 SMA):</label>
+          <select id="prof-school-level" class="pixel-input w-full text-xs" aria-label="Jenjang Sekolah">
+            <option value="1 SMP (Kelas 7)">1 SMP (Kelas 7)</option>
+            <option value="2 SMP (Kelas 8)">2 SMP (Kelas 8)</option>
+            <option value="3 SMP (Kelas 9)">3 SMP (Kelas 9)</option>
+            <option value="1 SMA (Kelas 10)">1 SMA (Kelas 10)</option>
+            <option value="2 SMA (Kelas 11)">2 SMA (Kelas 11)</option>
+            <option value="3 SMA (Kelas 12)">3 SMA (Kelas 12)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Bio / Slogan Belajar:</label>
+          <textarea id="prof-bio" rows="2" class="pixel-input w-full text-xs"></textarea>
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">Peminatan Mata Pelajaran:</label>
+          <div class="grid grid-cols-2 gap-1.5" id="prof-subjects-container">
+            <!-- Checkboxes rendered via JS -->
+          </div>
+        </div>
+
+        <div class="pt-2 border-t border-slate-200 flex justify-end gap-2">
+          <button type="button" onclick="closeProfileModal()" class="pixel-btn pixel-btn-sm bg-slate-200 text-slate-800 font-pixel text-[9px]">
+            Batal
+          </button>
+          <button type="submit" class="pixel-btn pixel-btn-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-pixel text-[9px]">
+            Simpan Perubahan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. SUPABASE CONFIGURATION MODAL -->
+  <div id="modal-supabase" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 modal-backdrop">
+    <div class="pixel-card bg-white max-w-xl w-full p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-2 border-b-2 border-slate-900">
+        <div class="flex items-center gap-2">
+          <span>⚡</span>
+          <h3 class="font-pixel text-xs text-slate-900">Konfigurasi Saluran Supabase</h3>
+        </div>
+        <button onclick="closeSupabaseModal()" class="text-slate-500 hover:text-black font-bold p-1 text-sm" aria-label="Tutup Modal Supabase">✕</button>
+      </div>
+
+      <div class="p-3 bg-emerald-50 border-2 border-emerald-400 text-emerald-900 text-xs">
+        <strong>Status Koneksi Sandboxed:</strong> Mesin sinkronisasi peer-to-peer mandiri berjalan aktif. Data kehadiran monki teman diperbarui secara berkala tanpa memerlukan konfigurasi token manual.
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">SUPABASE_URL (Opsional untuk Server Sendiri):</label>
+          <input type="text" id="supabase-url-input" placeholder="https://xyzcompany.supabase.co" class="pixel-input w-full text-xs">
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">SUPABASE_ANON_KEY:</label>
+          <input type="password" id="supabase-key-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." class="pixel-input w-full text-xs">
+        </div>
+
+        <div>
+          <label class="font-bold text-slate-700 block mb-1">CDN Scripts &amp; Skrip Klien (Referensi Setup):</label>
+          <div class="bg-slate-900 text-emerald-400 p-2 font-mono text-[10px] overflow-x-auto border border-slate-700">
+            &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="font-bold text-slate-700">Skema SQL Tabel Supabase (leaderboard, rooms, chats, profiles):</label>
+            <button onclick="copySQLSchema()" class="text-[10px] text-sky-600 hover:underline">Salin Skrip SQL</button>
+          </div>
+          <div class="bg-slate-900 text-slate-300 p-2 font-mono text-[9px] max-h-[110px] overflow-y-auto border border-slate-700">
+-- 1. Profiles Table<br>
+CREATE TABLE profiles (id UUID PRIMARY KEY, student_name TEXT, monki_name TEXT, school_level TEXT, level INT, coins INT);<br>
+-- 2. Rooms Table<br>
+CREATE TABLE rooms (id TEXT PRIMARY KEY, host_id TEXT, island_tier INT, max_members INT);<br>
+-- 3. Chats Table<br>
+CREATE TABLE chats (id BIGSERIAL PRIMARY KEY, room_code TEXT, sender_name TEXT, message TEXT, created_at TIMESTAMPTZ);<br>
+-- 4. Leaderboard Table<br>
+CREATE TABLE leaderboard (id BIGSERIAL PRIMARY KEY, student_name TEXT, monki_name TEXT, focus_minutes INT, streak_days INT, island_tier INT);
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2 border-t border-slate-200 flex justify-end gap-2">
+        <button onclick="saveSupabaseConfig()" class="pixel-btn pixel-btn-sm bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-pixel text-[9px]">
+          Simpan &amp; Terapkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ONBOARDING TUTORIAL TYPEWRITER MODAL WITH 8-BIT SFX -->
+  <div id="modal-onboarding" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 modal-backdrop">
+    <div class="pixel-card bg-slate-900 text-white max-w-lg w-full p-5 space-y-4 border-slate-950">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-2 border-b-2 border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-amber-400">🎓</span>
+          <span class="font-pixel text-xs text-amber-400">Panduan Selamat Datang</span>
+        </div>
+        <span id="onboarding-step-indicator" class="font-pixel text-[10px] text-slate-400">Langkah 1 / 5</span>
+      </div>
+
+      <!-- Dialogue Character Avatar & Text Box -->
+      <div class="flex items-start gap-4 p-3 bg-slate-950 border-2 border-slate-800 min-h-[140px]">
+        <div class="w-16 h-16 bg-amber-500 border-2 border-white flex-shrink-0 flex items-center justify-center text-3xl shadow-[0_2px_0_#000]">
+          🐵
+        </div>
+        <div class="flex-grow">
+          <div class="font-pixel text-[10px] text-amber-300 mb-1" id="tutorial-speaker-name">Profesor Monki:</div>
+          <p id="typewriter-text" class="text-xs sm:text-sm font-pixel text-slate-200 leading-relaxed min-h-[60px]">
+            <!-- Typed letter by letter via JS -->
+          </p>
+        </div>
+      </div>
+
+      <!-- Dialogue Navigation Buttons -->
+      <div class="flex items-center justify-between pt-2">
+        <button onclick="skipOnboardingTutorial()" class="text-xs text-slate-400 hover:text-white font-medium">
+          Lewati Panduan
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="prevOnboardingStep()" id="btn-prev-tutorial" class="pixel-btn pixel-btn-sm bg-slate-800 text-slate-400 font-pixel text-[9px]" disabled>
+            Kembali
+          </button>
+          <button onclick="nextOnboardingStep()" id="btn-next-tutorial" class="pixel-btn pixel-btn-sm bg-amber-500 hover:bg-amber-400 text-slate-950 font-pixel text-[9px]">
+            Lanjut ➡️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. KICK CONFIRMATION MODAL -->
+  <div id="modal-kick" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 modal-backdrop">
+    <div class="pixel-card bg-white max-w-sm w-full p-4 space-y-3">
+      <div class="flex items-center gap-2 text-rose-600">
+        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+        <h4 class="font-pixel text-xs">Keluarkan dari Pulau?</h4>
+      </div>
+      <p class="text-xs text-slate-600">
+        Apakah Anda yakin ingin mengeluarkan <strong id="kick-player-name" class="text-slate-900">Nama Teman</strong> dari ruang belajar pulau ini?
+      </p>
+      <div class="pt-2 flex justify-end gap-2">
+        <button onclick="closeKickModal()" class="pixel-btn pixel-btn-sm bg-slate-200 text-slate-800 text-[9px]">
+          Batal
+        </button>
+        <button onclick="confirmKickPlayer()" class="pixel-btn pixel-btn-sm bg-rose-600 hover:bg-rose-500 text-white font-pixel text-[9px]">
+          Keluarkan! 💨
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-4 left-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Notebook State Persistence Shim -->
+  <api-shim></api-shim>
+
+  <!-- ==================== MAIN LOGIC SCRIPT ==================== -->
+  <script>
+    /* ==========================================================================
+       STUDY-VERSE COMPLETE CLIENT ENGINE
+       ========================================================================== */
+
+    // --- 1. GLOBAL STATE OBJECT ---
+    let appState = {
+      profile: {
+        studentName: `Hamzah`,
+        monkiName: `Koko Monki`,
+        level: 2,
+        xp: 65,
+        xpTarget: 100,
+        joinDate: `07 November 2026`,
+        schoolLevel: `2 SMP (Kelas 8)`,
+        bio: `Siswa rajin yang bercita-cita menguasai sains dan PTN impian!`,
+        subjects: [`Matematika`, `IPA / Fisika`, `Bahasa Inggris`],
+        furColor: `#8d5524`,
+        furName: `Cokelat Klasik`,
+        outfitColor: `#0d9488`,
+        outfitName: `Teal Santai`,
+        islandTheme: `emerald`,
+        equippedAccessory: `none` // none, grad_cap, wizard_hat, glasses, headphones
+      },
+      island: {
+        tier: 1, // 1 (5x5), 2 (7x7), 3 (9x9), 4 (11x11)
+        happiness: 85,
+        bananas: 5,
+        decorations: [`campfire`]
+      },
+      stats: {
+        coins: 120,
+        activeStreak: 5,
+        longestStreak: 12,
+        totalFocusMinutes: 430,
+        lastCheckinDate: `2026-11-06`,
+        dailyCheckinClaimed: false
+      },
+      timer: {
+        durationSeconds: 25 * 60,
+        remainingSeconds: 25 * 60,
+        isRunning: false,
+        mode: `focus`, // focus, shortBreak, longBreak
+        sessionIndex: 1,
+        totalSessions: 4
+      },
+      room: {
+        code: `MONKE-772`,
+        // STARTS EMPTY WITH ONLY HOST (MAIN USER)
+        members: []
+      },
+      tasks: [
+        { id: 1, text: `Tinjau Materi Pembelajaran Bab 4`, priority: `high`, pomodoros: 2, completed: false },
+        { id: 2, text: `Latihan Soal Matematika Aljabar`, priority: `medium`, pomodoros: 3, completed: false },
+        { id: 3, text: `Membaca Modul Bahasa Indonesia`, priority: `low`, pomodoros: 1, completed: true }
+      ],
+      activeTaskId: 1,
+      wellness: {
+        waterGlasses: 5,
+        waterTarget: 8
+      },
+      history: [
+        { date: `2026-11-06`, time: `14:30`, duration: 25, task: `Membaca Modul Bahasa Indonesia`, coins: 20 },
+        { date: `2026-11-06`, time: `15:15`, duration: 25, task: `Tinjau Materi Pembelajaran Bab 4`, coins: 20 }
+      ],
+      supabase: {
+        url: ``,
+        key: ``,
+        status: `sandboxed`
+      },
+      tutorialCompleted: false
+    };
+
+    // Color Swatches Definitions
+    const FUR_COLORS = [
+      { id: `fur-1`, name: `Cokelat Klasik`, hex: `#8d5524`, borderHex: `#5a3818` },
+      { id: `fur-2`, name: `Emas Hangat`, hex: `#eab308`, borderHex: `#ca8a04` },
+      { id: `fur-3`, name: `Putih Salju`, hex: `#f8fafc`, borderHex: `#cbd5e1` },
+      { id: `fur-4`, name: `Hitam Malam`, hex: `#334155`, borderHex: `#1e293b` },
+      { id: `fur-5`, name: `Hijau Matcha`, hex: `#4ade80`, borderHex: `#16a34a` },
+      { id: `fur-6`, name: `Merah Muda`, hex: `#f472b6`, borderHex: `#db2777` }
+    ];
+
+    const OUTFIT_COLORS = [
+      { id: `out-1`, name: `Teal Santai`, hex: `#0d9488` },
+      { id: `out-2`, name: `Merah Berani`, hex: `#dc2626` },
+      { id: `out-3`, name: `Biru Bahari`, hex: `#2563eb` },
+      { id: `out-4`, name: `Sakura Manis`, hex: `#ec4899` },
+      { id: `out-5`, name: `Cendekiawan Emas`, hex: `#d97706` },
+      { id: `out-6`, name: `Cyber Gelap`, hex: `#18181b` }
+    ];
+
+    const ISLAND_THEMES = [
+      { id: `emerald`, name: `Musim Semi Zamrud`, grass: `#10b981`, grassDark: `#059669`, sand: `#fde047`, cliff: `#92400e`, ocean: `#0284c7` },
+      { id: `autumn`, name: `Senja Musim Gugur`, grass: `#ea580c`, grassDark: `#c2410c`, sand: `#fdba74`, cliff: `#7c2d12`, ocean: `#0369a1` },
+      { id: `midnight`, name: `Neon Tengah Malam`, grass: `#475569`, grassDark: `#334155`, sand: `#38bdf8`, cliff: `#0f172a`, ocean: `#0f172a` },
+      { id: `pastel`, name: `Mimpi Pastel`, grass: `#c084fc`, grassDark: `#a855f7`, sand: `#fed7aa`, cliff: `#6b21a8`, ocean: `#38bdf8` },
+      { id: `oasis`, name: `Oasis Padang Pasir`, grass: `#f59e0b`, grassDark: `#d97706`, sand: `#fef08a`, cliff: `#78350f`, ocean: `#0d9488` }
+    ];
+
+    const SHOP_ITEMS = [
+      { id: `grad_cap`, name: `Topi Wisuda`, category: `accessory`, price: 50, icon: `🎓` },
+      { id: `wizard_hat`, name: `Topi Penyihir`, category: `accessory`, price: 75, icon: `🧙‍♂️` },
+      { id: `glasses`, name: `Kacamata Belajar`, category: `accessory`, price: 40, icon: `👓` },
+      { id: `headphones`, name: `Headphone Lo-Fi`, category: `accessory`, price: 60, icon: `🎧` },
+      { id: `campfire`, name: `Api Unggun Piksel`, category: `decoration`, price: 80, icon: `🔥` },
+      { id: `bonsai`, name: `Pohon Bonsai Sakura`, category: `decoration`, price: 90, icon: `🌸` },
+      { id: `bookshelf`, name: `Rak Buku Kayu`, category: `decoration`, price: 70, icon: `📚` },
+      { id: `lantern`, name: `Lentera Hutan`, category: `decoration`, price: 45, icon: `🏮` },
+      { id: `rug`, name: `Karpet Santai`, category: `decoration`, price: 35, icon: `🧶` },
+      { id: `bananas_pack`, name: `Paket Pisang x5`, category: `consumable`, price: 20, icon: `🍌` }
+    ];
+
+    const QUIZ_QUESTIONS = [
+      {
+        subject: `matematika`,
+        label: `Matematika • Kelas 8 SMP`,
+        q: `Jika 3x + 7 = 22, berapakah nilai dari x?`,
+        options: [`x = 4`, `x = 5`, `x = 6`, `x = 7`],
+        correct: 1,
+        explanation: `3x = 22 - 7 => 3x = 15 => x = 15 / 3 = 5.`
+      },
+      {
+        subject: `ipa`,
+        label: `IPA Fisika • Kelas 9 SMP`,
+        q: `Sebuah benda bermassa 2 kg bergerak dengan percepatan 3 m/s². Gaya yang bekerja adalah...`,
+        options: [`5 Newton`, `6 Newton`, `1,5 Newton`, `9 Newton`],
+        correct: 1,
+        explanation: `Sesuai Hukum Newton II: F = m × a = 2 kg × 3 m/s² = 6 Newton.`
+      },
+      {
+        subject: `biologi`,
+        label: `Biologi • Kelas 10 SMA`,
+        q: `Organel sel yang berfungsi sebagai tempat respirasi sel dan penghasil energi utama (ATP) adalah...`,
+        options: [`Ribosom`, `Mitokondria`, `Badan Golgi`, `Retikulum Endoplasma`],
+        correct: 1,
+        explanation: `Mitokondria dikenal sebagai "powerhouse of the cell" yang memproduksi molekul energi ATP.`
+      },
+      {
+        subject: `bahasa_indonesia`,
+        label: `Bahasa Indonesia • Kelas 11 SMA`,
+        q: `Bagian teks eksplanasi yang berisi penjelasan urutan peristiwa terjadinya fenomena secara kausalitas disebut...`,
+        options: [`Pernyataan Umum`, `Deretan Penjelas`, `Interpretasi`, `Ulasan`],
+        correct: 1,
+        explanation: `Deretan penjelas memaparkan proses, sebab, dan akibat fenomena terjadi.`
+      },
+      {
+        subject: `bahasa_inggris`,
+        label: `Bahasa Inggris • Kelas 12 SMA`,
+        q: `Choose the correct conditional sentence: "If she ... harder, she would have passed the final exam."`,
+        options: [`studied`, `had studied`, `has studied`, `studies`],
+        correct: 1,
+        explanation: `Third conditional: If + Past Perfect (had studied) + would have + V3.`
+      },
+      {
+        subject: `sejarah`,
+        label: `Sejarah • Kelas 11 SMA`,
+        q: `Naskah Proklamasi Kemerdekaan Indonesia diketik oleh tokoh pemuda bernama...`,
+        options: [`Sukarni`, `Sayuti Melik`, `Chaetul Saleh`, `B.M. Diah`],
+        correct: 1,
+        explanation: `Sayuti Melik adalah tokoh yang mengetik teks proklamasi yang disusun Soekarno dan Hatta.`
+      }
+    ];
+
+    // --- 2. WEB AUDIO API SYNTHESIZER ---
+    let audioCtx = null;
+    let isMasterMuted = false;
+    let ambientNodes = {
+      rain: null,
+      campfire: null,
+      cafe: null
+    };
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) {
+          audioCtx = new AudioContextClass();
+        }
+      }
+      if (audioCtx && audioCtx.state === `suspended`) {
+        audioCtx.resume();
+      }
+    }
+
+    function toggleAudioMute() {
+      isMasterMuted = !isMasterMuted;
+      const btn = document.getElementById(`btn-audio-mute`);
+      if (btn) {
+        if (isMasterMuted) {
+          btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4 text-rose-400"></i>`;
+          showToast(`🔇 Audio dinonaktifkan`);
+          stopAllAmbient();
+        } else {
+          btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-amber-400"></i>`;
+          showToast(`🔊 Audio aktif`);
+        }
+        if (window.lucide) window.lucide.createIcons();
+      }
+    }
+
+    function play8BitTone(freq, duration, type = `square`) {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn(`Audio tone error`, e);
+      }
+    }
+
+    function playCoinSFX() {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = `square`;
+      osc.frequency.setValueAtTime(987.77, t); // B5
+      osc.frequency.setValueAtTime(1318.51, t + 0.08); // E6
+      gain.gain.setValueAtTime(0.1, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.3);
+    }
+
+    function playTypewriterSFX() {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = `triangle`;
+      osc.frequency.setValueAtTime(600 + Math.random() * 300, t);
+      gain.gain.setValueAtTime(0.08, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.03);
+    }
+
+    function playMunchSFX() {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = `triangle`;
+      osc.frequency.setValueAtTime(320, t);
+      osc.frequency.exponentialRampToValueAtTime(140, t + 0.15);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.15);
+    }
+
+    function playLevelUpSFX() {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        setTimeout(() => {
+          play8BitTone(freq, 0.15, `square`);
+        }, idx * 100);
+      });
+    }
+
+    function playKickSFX() {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = `sawtooth`;
+      osc.frequency.setValueAtTime(260, t);
+      osc.frequency.exponentialRampToValueAtTime(60, t + 0.25);
+      gain.gain.setValueAtTime(0.15, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 0.25);
+    }
+
+    function playBellSFX() {
+      if (isMasterMuted) return;
+      initAudio();
+      if (!audioCtx) return;
+      const t = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = `sine`;
+      osc.frequency.setValueAtTime(880, t); // A5
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(t);
+      osc.stop(t + 1.2);
+    }
+
+    // Ambient Noise Generators (Rain, Campfire, Cafe)
+    function createNoiseBuffer() {
+      if (!audioCtx) return null;
+      const bufferSize = audioCtx.sampleRate * 2;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      return buffer;
+    }
+
+    function toggleAmbientSound(type) {
+      if (isMasterMuted) {
+        showToast(`Suara sedang dibisukan. Aktifkan audio terlebih dahulu.`);
+        return;
+      }
+      initAudio();
+      if (!audioCtx) return;
+
+      const labelEl = document.getElementById(`label-sound-${type}`);
+      const btnEl = document.getElementById(`btn-sound-${type}`);
+
+      if (ambientNodes[type]) {
+        // Stop sound
+        try {
+          ambientNodes[type].source.stop();
+          ambientNodes[type].source.disconnect();
+        } catch (e) {}
+        ambientNodes[type] = null;
+        if (btnEl) btnEl.classList.remove(`bg-amber-400`, `text-slate-950`);
+        showToast(`Suara ${type} dimatikan`);
+      } else {
+        // Start sound
+        const buffer = createNoiseBuffer();
+        if (!buffer) return;
+
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+
+        const gainNode = audioCtx.createGain();
+        const volInput = document.getElementById(`vol-${type}`);
+        const vol = volInput ? (parseFloat(volInput.value) / 100) : 0.4;
+        gainNode.gain.setValueAtTime(vol * 0.15, audioCtx.currentTime);
+
+        const filter = audioCtx.createBiquadFilter();
+        if (type === `rain`) {
+          filter.type = `lowpass`;
+          filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+        } else if (type === `campfire`) {
+          filter.type = `bandpass`;
+          filter.frequency.setValueAtTime(450, audioCtx.currentTime);
+          filter.Q.setValueAtTime(1.5, audioCtx.currentTime);
+        } else {
+          // cafe
+          filter.type = `lowpass`;
+          filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+        }
+
+        source.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        source.start();
+
+        ambientNodes[type] = { source, gainNode, filter };
+        if (btnEl) btnEl.classList.add(`bg-amber-400`, `text-slate-950`);
+        showToast(`Suara ${type} aktif 🎧`);
+      }
+    }
+
+    function updateSoundVolume(type, val) {
+      if (ambientNodes[type] && ambientNodes[type].gainNode && audioCtx) {
+        const vol = (parseFloat(val) / 100) * 0.2;
+        ambientNodes[type].gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+      }
+    }
+
+    function stopAllAmbient() {
+      Object.keys(ambientNodes).forEach(key => {
+        if (ambientNodes[key]) {
+          try {
+            ambientNodes[key].source.stop();
+          } catch (e) {}
+          ambientNodes[key] = null;
+          const btn = document.getElementById(`btn-sound-${key}`);
+          if (btn) btn.classList.remove(`bg-amber-400`, `text-slate-950`);
+        }
+      });
+    }
+
+    // --- 3. ISOMETRIC PIXEL ART CANVAS ENGINE ---
+    const canvas = document.getElementById(`island-canvas`);
+    const ctx = canvas ? canvas.getContext(`2d`) : null;
+    let animFrameId = null;
+    let monkiAnimationTick = 0;
+    let floatingParticles = [];
+    let guestToKick = null;
+
+    function getGridDimensions() {
+      const tier = appState.island.tier;
+      if (tier === 1) return 5;
+      if (tier === 2) return 7;
+      if (tier === 3) return 9;
+      return 11;
+    }
+
+    function getThemePalette() {
+      const found = ISLAND_THEMES.find(t => t.id === appState.profile.islandTheme);
+      return found || ISLAND_THEMES[0];
+    }
+
+    function resizeCanvas() {
+      if (!canvas) return;
+      canvas.width = 640;
+      canvas.height = 400;
+    }
+
+    // Isometric projection math
+    function isoToScreen(col, row, originX, originY, tileW, tileH) {
+      const x = (col - row) * (tileW / 2) + originX;
+      const y = (col + row) * (tileH / 2) + originY;
+      return { x, y };
+    }
+
+    function drawIsometricBlock(x, y, w, h, depth, topColor, leftColor, rightColor) {
+      if (!ctx) return;
+      // Top face
+      ctx.fillStyle = topColor;
+      ctx.beginPath();
+      ctx.moveTo(x, y - h / 2);
+      ctx.lineTo(x + w / 2, y);
+      ctx.lineTo(x, y + h / 2);
+      ctx.lineTo(x - w / 2, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = `rgba(0, 0, 0, 0.15)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Left face
+      ctx.fillStyle = leftColor;
+      ctx.beginPath();
+      ctx.moveTo(x - w / 2, y);
+      ctx.lineTo(x, y + h / 2);
+      ctx.lineTo(x, y + h / 2 + depth);
+      ctx.lineTo(x - w / 2, y + depth);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right face
+      ctx.fillStyle = rightColor;
+      ctx.beginPath();
+      ctx.moveTo(x, y + h / 2);
+      ctx.lineTo(x + w / 2, y);
+      ctx.lineTo(x + w / 2, y + depth);
+      ctx.lineTo(x, y + h / 2 + depth);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawPixelMonki(centerX, centerY, isMain, customFur, customOutfit, isTyping, isSnoozing, accessory, nameTag) {
+      if (!ctx) return;
+      const bobY = isSnoozing ? 2 : Math.sin(monkiAnimationTick * 0.08) * 2;
+      const px = Math.round(centerX);
+      const py = Math.round(centerY + bobY);
+
+      // Shadow
+      ctx.fillStyle = `rgba(0,0,0,0.25)`;
+      ctx.beginPath();
+      ctx.ellipse(px, py + 12, 14, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Wooden Study Desk
+      ctx.fillStyle = `#854d0e`;
+      ctx.fillRect(px - 16, py + 2, 32, 10);
+      ctx.fillStyle = `#a16207`;
+      ctx.fillRect(px - 15, py + 3, 30, 2);
+      // Desk Legs
+      ctx.fillStyle = `#713f12`;
+      ctx.fillRect(px - 14, py + 12, 3, 8);
+      ctx.fillRect(px + 11, py + 12, 3, 8);
+
+      // Laptop on Desk
+      ctx.fillStyle = `#334155`;
+      ctx.fillRect(px - 8, py - 2, 16, 5);
+      // Screen glow
+      ctx.fillStyle = isTyping ? `#38bdf8` : `#64748b`;
+      ctx.fillRect(px - 7, py - 9, 14, 8);
+      ctx.fillStyle = `#0284c7`;
+      ctx.fillRect(px - 6, py - 8, 12, 6);
+
+      // Coffee Mug
+      ctx.fillStyle = `#f8fafc`;
+      ctx.fillRect(px + 9, py + 1, 4, 5);
+      // Steam
+      if (Math.floor(monkiAnimationTick / 10) % 2 === 0) {
+        ctx.fillStyle = `rgba(255, 255, 255, 0.6)`;
+        ctx.fillRect(px + 10, py - 3, 2, 2);
+      }
+
+      // Monki Body / Outfit
+      ctx.fillStyle = customOutfit || `#0d9488`;
+      ctx.fillRect(px - 9, py - 6, 18, 12);
+
+      // Monki Head
+      ctx.fillStyle = customFur || `#8d5524`;
+      ctx.fillRect(px - 8, py - 20, 16, 14);
+
+      // Monki Ears
+      ctx.fillStyle = customFur || `#8d5524`;
+      ctx.fillRect(px - 12, py - 18, 4, 6);
+      ctx.fillRect(px + 8, py - 18, 4, 6);
+      ctx.fillStyle = `#fbcfe8`;
+      ctx.fillRect(px - 11, py - 16, 2, 3);
+      ctx.fillRect(px + 9, py - 16, 2, 3);
+
+      // Monki Face Muzzle
+      ctx.fillStyle = `#fde68a`;
+      ctx.fillRect(px - 6, py - 13, 12, 7);
+
+      // Eyes
+      if (isSnoozing) {
+        // Closed snooze eyes
+        ctx.fillStyle = `#0f172a`;
+        ctx.fillRect(px - 4, py - 11, 3, 1);
+        ctx.fillRect(px + 1, py - 11, 3, 1);
+
+        // Zzz particles
+        if (Math.floor(monkiAnimationTick / 20) % 2 === 0) {
+          ctx.font = `8px monospace`;
+          ctx.fillStyle = `#ffffff`;
+          ctx.fillText(`Zzz`, px + 10, py - 24);
+        }
+      } else {
+        // Open eyes with blink
+        const isBlink = Math.floor(monkiAnimationTick / 40) % 15 === 0;
+        if (!isBlink) {
+          ctx.fillStyle = `#0f172a`;
+          ctx.fillRect(px - 4, py - 12, 2, 3);
+          ctx.fillRect(px + 2, py - 12, 2, 3);
+          ctx.fillStyle = `#ffffff`;
+          ctx.fillRect(px - 4, py - 12, 1, 1);
+          ctx.fillRect(px + 2, py - 12, 1, 1);
+        } else {
+          ctx.fillStyle = `#0f172a`;
+          ctx.fillRect(px - 4, py - 11, 2, 1);
+          ctx.fillRect(px + 2, py - 11, 2, 1);
+        }
+      }
+
+      // Nose / Mouth
+      ctx.fillStyle = `#78350f`;
+      ctx.fillRect(px - 1, py - 8, 2, 1);
+
+      // Typing Arms
+      ctx.fillStyle = customFur || `#8d5524`;
+      if (isTyping && Math.floor(monkiAnimationTick / 8) % 2 === 0) {
+        ctx.fillRect(px - 10, py - 3, 5, 4);
+        ctx.fillRect(px + 5, py - 4, 5, 4);
+      } else {
+        ctx.fillRect(px - 9, py - 4, 4, 4);
+        ctx.fillRect(px + 5, py - 4, 4, 4);
+      }
+
+      // Accessory Rendering
+      if (accessory === `grad_cap`) {
+        ctx.fillStyle = `#0f172a`;
+        ctx.fillRect(px - 11, py - 23, 22, 3);
+        ctx.fillRect(px - 4, py - 27, 8, 4);
+        ctx.fillStyle = `#eab308`;
+        ctx.fillRect(px + 8, py - 22, 2, 6);
+      } else if (accessory === `wizard_hat`) {
+        ctx.fillStyle = `#7e22ce`;
+        ctx.beginPath();
+        ctx.moveTo(px, py - 32);
+        ctx.lineTo(px + 10, py - 21);
+        ctx.lineTo(px - 10, py - 21);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = `#facc15`;
+        ctx.fillRect(px - 2, py - 26, 4, 3);
+      } else if (accessory === `glasses`) {
+        ctx.strokeStyle = `#0f172a`;
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(px - 5, py - 13, 4, 4);
+        ctx.strokeRect(px + 1, py - 13, 4, 4);
+        ctx.beginPath();
+        ctx.moveTo(px - 1, py - 11);
+        ctx.lineTo(px + 1, py - 11);
+        ctx.stroke();
+      } else if (accessory === `headphones`) {
+        ctx.fillStyle = `#ef4444`;
+        ctx.fillRect(px - 11, py - 18, 3, 8);
+        ctx.fillRect(px + 8, py - 18, 3, 8);
+        ctx.strokeStyle = `#1e293b`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py - 18, 10, Math.PI, 0, false);
+        ctx.stroke();
+      }
+
+      // Name & Status Pill
+      if (nameTag) {
+        ctx.font = `8px monospace`;
+        const textW = ctx.measureText(nameTag).width;
+        ctx.fillStyle = isMain ? `rgba(15, 23, 42, 0.85)` : `rgba(2, 132, 199, 0.85)`;
+        ctx.fillRect(px - textW / 2 - 4, py - 34, textW + 8, 12);
+        ctx.strokeStyle = `#ffffff`;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(px - textW / 2 - 4, py - 34, textW + 8, 12);
+        ctx.fillStyle = `#ffffff`;
+        ctx.fillText(nameTag, px - textW / 2, py - 25);
+      }
+    }
+
+    function drawCampfire(x, y) {
+      if (!ctx) return;
+      // Logs ring
+      ctx.fillStyle = `#78350f`;
+      ctx.fillRect(x - 8, y + 2, 16, 4);
+      ctx.fillRect(x - 6, y, 12, 4);
+
+      // Flickering 8-bit flames
+      const frame = Math.floor(monkiAnimationTick / 8) % 3;
+      const flameH = 10 + Math.sin(monkiAnimationTick * 0.2) * 3;
+
+      ctx.fillStyle = `#ea580c`;
+      ctx.beginPath();
+      ctx.moveTo(x - 5, y + 2);
+      ctx.lineTo(x, y - flameH);
+      ctx.lineTo(x + 5, y + 2);
+      ctx.fill();
+
+      ctx.fillStyle = `#facc15`;
+      ctx.beginPath();
+      ctx.moveTo(x - 3, y + 2);
+      ctx.lineTo(x + (frame === 1 ? 1 : -1), y - flameH + 4);
+      ctx.lineTo(x + 3, y + 2);
+      ctx.fill();
+
+      // Sparkles
+      if (Math.random() < 0.3) {
+        ctx.fillStyle = `#fef08a`;
+        ctx.fillRect(x + (Math.random() * 8 - 4), y - flameH - Math.random() * 6, 2, 2);
+      }
+    }
+
+    function drawBonsai(x, y) {
+      if (!ctx) return;
+      // Pot
+      ctx.fillStyle = `#475569`;
+      ctx.fillRect(x - 6, y + 4, 12, 5);
+      // Trunk
+      ctx.fillStyle = `#78350f`;
+      ctx.fillRect(x - 2, y - 4, 4, 9);
+      // Leaves
+      ctx.fillStyle = `#ec4899`;
+      ctx.fillRect(x - 10, y - 12, 20, 8);
+      ctx.fillStyle = `#f472b6`;
+      ctx.fillRect(x - 8, y - 16, 16, 6);
+      ctx.fillStyle = `#ffffff`;
+      ctx.fillRect(x - 4, y - 14, 4, 3);
+    }
+
+    function renderCanvasScene() {
+      if (!ctx || !canvas) return;
+      monkiAnimationTick++;
+
+      const theme = getThemePalette();
+      const gridSize = getGridDimensions();
+      const originX = canvas.width / 2;
+      const originY = 110 + (gridSize === 5 ? 50 : gridSize === 7 ? 30 : 10);
+      const tileW = 44;
+      const tileH = 22;
+      const cliffDepth = 22;
+
+      // Clear Canvas with Ocean Color
+      ctx.fillStyle = theme.ocean;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Animated ocean wave lines
+      ctx.fillStyle = `rgba(255, 255, 255, 0.15)`;
+      for (let i = 0; i < 8; i++) {
+        const waveX = (i * 90 + monkiAnimationTick * 0.4) % (canvas.width + 100) - 50;
+        const waveY = 30 + (i * 45) % (canvas.height - 40);
+        ctx.fillRect(waveX, waveY, 20, 2);
+        ctx.fillRect(waveX + 5, waveY + 2, 10, 2);
+      }
+
+      // Draw Island Tiles (Isometric Diamond Grid)
+      for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+          const pt = isoToScreen(c, r, originX, originY, tileW, tileH);
+          const isEdge = (r === gridSize - 1 || c === gridSize - 1);
+
+          let topCol = theme.grass;
+          if ((r + c) % 2 === 1) topCol = theme.grassDark;
+
+          // Cobblestone path for center
+          const mid = Math.floor(gridSize / 2);
+          if (r === mid && c >= mid - 1 && c <= mid + 1) {
+            topCol = `#cbd5e1`;
+          }
+
+          // Draw tile
+          drawIsometricBlock(
+            pt.x,
+            pt.y,
+            tileW,
+            tileH,
+            isEdge ? cliffDepth : 0,
+            topCol,
+            theme.cliff,
+            `#5a2307`
+          );
+        }
+      }
+
+      // Render Active Island Decorations
+      const decs = appState.island.decorations;
+      if (decs.includes(`campfire`)) {
+        const firePt = isoToScreen(1, Math.floor(gridSize / 2), originX, originY, tileW, tileH);
+        drawCampfire(firePt.x, firePt.y);
+      }
+      if (decs.includes(`bonsai`)) {
+        const treePt = isoToScreen(Math.floor(gridSize / 2), 1, originX, originY, tileW, tileH);
+        drawBonsai(treePt.x, treePt.y);
+      }
+
+      // Render Main User's Monki (Center Desk)
+      const mid = Math.floor(gridSize / 2);
+      const userPt = isoToScreen(mid, mid, originX, originY, tileW, tileH);
+      const isTimerRunning = appState.timer.isRunning;
+      const isSnooze = !isTimerRunning;
+
+      drawPixelMonki(
+        userPt.x,
+        userPt.y,
+        true,
+        appState.profile.furColor,
+        appState.profile.outfitColor,
+        isTimerRunning,
+        isSnooze,
+        appState.profile.equippedAccessory,
+        `${appState.profile.monkiName} (Kamu)`
+      );
+
+      // Render Guest Monkis on Island
+      // (Starts with ZERO guests unless simulated or joined)
+      const guests = appState.room.members.filter(m => !m.isHost);
+      const guestTileOffsets = [
+        { c: mid - 1, r: mid + 1 },
+        { c: mid + 1, r: mid - 1 },
+        { c: mid - 1, r: mid - 1 },
+        { c: mid + 1, r: mid + 1 },
+        { c: 0, r: mid }
+      ];
+
+      guests.forEach((g, idx) => {
+        const offset = guestTileOffsets[idx % guestTileOffsets.length];
+        const gPt = isoToScreen(offset.c, offset.r, originX, originY, tileW, tileH);
+        drawPixelMonki(
+          gPt.x,
+          gPt.y,
+          false,
+          g.furColor || `#ca8a04`,
+          g.outfitColor || `#2563eb`,
+          true,
+          false,
+          g.accessory || `none`,
+          g.name
+        );
+      });
+
+      // Render Floating Emoji Reaction Particles
+      for (let i = floatingParticles.length - 1; i >= 0; i--) {
+        const p = floatingParticles[i];
+        p.y -= 1.2;
+        p.alpha -= 0.015;
+        p.x += Math.sin(monkiAnimationTick * 0.1) * 0.5;
+
+        ctx.font = `18px sans-serif`;
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.fillText(p.text, p.x, p.y);
+        ctx.globalAlpha = 1.0;
+
+        if (p.alpha <= 0) {
+          floatingParticles.splice(i, 1);
+        }
+      }
+
+      animFrameId = requestAnimationFrame(renderCanvasScene);
+    }
+
+    // Canvas Click Interaction: Detect Click on Guest Monki to Kick
+    if (canvas) {
+      canvas.addEventListener(`click`, (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+        const gridSize = getGridDimensions();
+        const originX = canvas.width / 2;
+        const originY = 110 + (gridSize === 5 ? 50 : gridSize === 7 ? 30 : 10);
+        const tileW = 44;
+        const tileH = 22;
+        const mid = Math.floor(gridSize / 2);
+
+        const guests = appState.room.members.filter(m => !m.isHost);
+        const guestTileOffsets = [
+          { c: mid - 1, r: mid + 1 },
+          { c: mid + 1, r: mid - 1 },
+          { c: mid - 1, r: mid - 1 },
+          { c: mid + 1, r: mid + 1 }
+        ];
+
+        let clickedGuest = null;
+        guests.forEach((g, idx) => {
+          const offset = guestTileOffsets[idx % guestTileOffsets.length];
+          const gPt = isoToScreen(offset.c, offset.r, originX, originY, tileW, tileH);
+          const dist = Math.hypot(clickX - gPt.x, clickY - gPt.y);
+          if (dist < 26) {
+            clickedGuest = g;
+          }
+        });
+
+        if (clickedGuest) {
+          openKickModal(clickedGuest.name);
+        } else {
+          // If clicked center monki, trigger happy bounce
+          const userPt = isoToScreen(mid, mid, originX, originY, tileW, tileH);
+          if (Math.hypot(clickX - userPt.x, clickY - userPt.y) < 30) {
+            triggerEmojiReaction(`🍌`);
+          }
+        }
+      });
+    }
+
+    // --- 4. FLOATING EMOJI & BANANA FEEDING MECHANIC ---
+    function triggerEmojiReaction(emoji) {
+      const originX = canvas ? canvas.width / 2 : 320;
+      const originY = 200;
+      floatingParticles.push({
+        x: originX - 10 + (Math.random() * 20 - 10),
+        y: originY,
+        text: emoji,
+        alpha: 1.0
+      });
+      play8BitTone(660, 0.08, `sine`);
+      showToast(`Reaksi dikirim: ${emoji}`);
+    }
+
+    function feedBanana() {
+      if (appState.island.bananas <= 0) {
+        showToast(`🍌 Pisang habis! Selesaikan sesi belajar atau beli di Toko.`);
+        return;
+      }
+
+      appState.island.bananas--;
+      appState.island.happiness = Math.min(100, appState.island.happiness + 15);
+      appState.profile.xp += 25;
+
+      playMunchSFX();
+      triggerEmojiReaction(`🍌`);
+      triggerEmojiReaction(`❤️`);
+
+      // Check Level Up
+      if (appState.profile.xp >= appState.profile.xpTarget) {
+        appState.profile.level++;
+        appState.profile.xp -= appState.profile.xpTarget;
+        appState.profile.xpTarget = Math.round(appState.profile.xpTarget * 1.4);
+        appState.stats.coins += 50;
+        playLevelUpSFX();
+        showToast(`🎉 LEVEL UP! Sekarang Level ${appState.profile.level} (+50 Koin Bonus)!`);
+      } else {
+        showToast(`🍌 Nyam! Monki senang (+25 XP, +15% Mood)`);
+      }
+
+      updateUI();
+      persistState();
+    }
+
+    // --- 5. POMODORO TIMER LOGIC ---
+    let timerInterval = null;
+
+    function toggleTimer() {
+      initAudio();
+      if (appState.timer.isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      appState.timer.isRunning = true;
+      const startBtn = document.getElementById(`timer-start-btn`);
+      const startText = document.getElementById(`timer-start-text`);
+      if (startBtn && startText) {
+        startBtn.classList.remove(`bg-emerald-500`, `hover:bg-emerald-400`);
+        startBtn.classList.add(`bg-amber-500`, `hover:bg-amber-400`);
+        startText.textContent = `Jeda Sesi`;
+      }
+
+      document.getElementById(`monki-status-text`).textContent = `Monki sedang fokus belajar...`;
+      play8BitTone(523, 0.1, `sine`);
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        if (appState.timer.remainingSeconds > 0) {
+          appState.timer.remainingSeconds--;
+          updateTimerDisplay();
+        } else {
+          completeTimerSession();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      appState.timer.isRunning = false;
+      if (timerInterval) clearInterval(timerInterval);
+
+      const startBtn = document.getElementById(`timer-start-btn`);
+      const startText = document.getElementById(`timer-start-text`);
+      if (startBtn && startText) {
+        startBtn.classList.remove(`bg-amber-500`, `hover:bg-amber-400`);
+        startBtn.classList.add(`bg-emerald-500`, `hover:bg-emerald-400`);
+        startText.textContent = `Lanjutkan Fokus`;
+      }
+
+      document.getElementById(`monki-status-text`).textContent = `Sesi dijeda (Monki beristirahat)`;
+      play8BitTone(392, 0.1, `sine`);
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      const modeSecs = appState.timer.mode === `focus` ? 25 * 60 : (appState.timer.mode === `shortBreak` ? 5 * 60 : 15 * 60);
+      appState.timer.durationSeconds = modeSecs;
+      appState.timer.remainingSeconds = modeSecs;
+      updateTimerDisplay();
+      play8BitTone(261, 0.1, `sine`);
+      showToast(`Timer diatur ulang.`);
+    }
+
+    function setTimerMode(mode) {
+      pauseTimer();
+      appState.timer.mode = mode;
+      let secs = 25 * 60;
+      if (mode === `shortBreak`) secs = 5 * 60;
+      if (mode === `longBreak`) secs = 15 * 60;
+
+      appState.timer.durationSeconds = secs;
+      appState.timer.remainingSeconds = secs;
+
+      // Update button styling
+      const focusBtn = document.getElementById(`mode-focus-btn`);
+      const shortBtn = document.getElementById(`mode-short-btn`);
+      const longBtn = document.getElementById(`mode-long-btn`);
+
+      [focusBtn, shortBtn, longBtn].forEach(b => {
+        if (b) {
+          b.className = `font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-slate-800 text-slate-300 hover:text-white`;
+        }
+      });
+
+      if (mode === `focus` && focusBtn) focusBtn.className = `font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-amber-500 text-slate-950 shadow-[0_2px_0_#000]`;
+      if (mode === `shortBreak` && shortBtn) shortBtn.className = `font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-sky-500 text-white shadow-[0_2px_0_#000]`;
+      if (mode === `longBreak` && longBtn) longBtn.className = `font-pixel text-[9px] py-2 px-1 text-center border-2 border-slate-950 bg-purple-600 text-white shadow-[0_2px_0_#000]`;
+
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById(`timer-display`);
+      if (!display) return;
+      const mins = Math.floor(appState.timer.remainingSeconds / 60);
+      const secs = appState.timer.remainingSeconds % 60;
+      display.textContent = `${String(mins).padStart(2, `0`)}:${String(secs).padStart(2, `0`)}`;
+    }
+
+    function completeTimerSession() {
+      pauseTimer();
+      playBellSFX();
+
+      if (appState.timer.mode === `focus`) {
+        appState.stats.coins += 20;
+        appState.stats.totalFocusMinutes += 25;
+        appState.profile.xp += 25;
+
+        // Log to session history
+        const now = new Date();
+        const activeTask = appState.tasks.find(t => t.id === appState.activeTaskId);
+        const taskName = activeTask ? activeTask.text : `Fokus Mandiri`;
+
+        appState.history.unshift({
+          date: now.toISOString().split(`T`)[0],
+          time: `${String(now.getHours()).padStart(2, `0`)}:${String(now.getMinutes()).padStart(2, `0`)}`,
+          duration: 25,
+          task: taskName,
+          coins: 20
+        });
+
+        showToast(`🎉 Sesi Selesai! Anda mendapatkan +20 Koin & +25 XP!`);
+
+        // Check if cycle moves to break
+        if (appState.timer.sessionIndex < appState.timer.totalSessions) {
+          appState.timer.sessionIndex++;
+          setTimerMode(`shortBreak`);
+        } else {
+          appState.timer.sessionIndex = 1;
+          setTimerMode(`longBreak`);
+          showToast(`🏆 4 Sesi tercapai! Waktunya istirahat panjang.`);
+        }
+      } else {
+        showToast(`☕ Waktu istirahat selesai. Mari mulai fokus kembali!`);
+        setTimerMode(`focus`);
+      }
+
+      updateUI();
+      persistState();
+    }
+
+    function skipTimerSession() {
+      completeTimerSession();
+    }
+
+    // --- 6. MULTIPLAYER ROOM & KICK PLAYER FEATURE ---
+    // Island starts empty with only the host!
+    function initRoomMembers() {
+      // Ensure host is always present
+      if (appState.room.members.length === 0) {
+        appState.room.members.push({
+          id: `host-1`,
+          name: `${appState.profile.monkiName} (Kamu)`,
+          status: `Tinjau Materi Pembelajaran`,
+          level: appState.profile.level,
+          isHost: true,
+          furColor: appState.profile.furColor,
+          outfitColor: appState.profile.outfitColor,
+          accessory: appState.profile.equippedAccessory
+        });
+      }
+      renderRoomMembersList();
+    }
+
+    function renderRoomMembersList() {
+      const container = document.getElementById(`room-members-container`);
+      const countEl = document.getElementById(`room-member-count`);
+      const headerPlayers = document.getElementById(`header-players`);
+
+      if (!container) return;
+      container.innerHTML = ``;
+
+      const members = appState.room.members;
+      if (countEl) countEl.textContent = members.length;
+      if (headerPlayers) headerPlayers.textContent = `${members.length} Monki`;
+
+      members.forEach(m => {
+        const row = document.createElement(`div`);
+        row.className = `p-1.5 bg-slate-50 border border-slate-300 flex items-center justify-between text-xs`;
+
+        const left = document.createElement(`div`);
+        left.className = `flex items-center gap-2`;
+        left.innerHTML = `
+          <span class="w-6 h-6 bg-amber-400 border border-slate-900 flex items-center justify-center text-xs">🐵</span>
+          <div>
+            <span class="font-bold text-slate-800 text-[11px] block">${m.name} ${m.isHost ? `(Host)` : ``}</span>
+            <span class="text-[10px] text-slate-500 block truncate max-w-[140px]">${m.status || `Fokus Belajar`}</span>
+          </div>
+        `;
+
+        const right = document.createElement(`div`);
+        right.className = `flex items-center gap-1`;
+
+        if (m.isHost) {
+          right.innerHTML = `<span class="pixel-badge bg-amber-400 text-slate-950 text-[8px]">HOST</span>`;
+        } else {
+          // KICK BUTTON FOR GUEST PLAYER
+          const kickBtn = document.createElement(`button`);
+          kickBtn.className = `pixel-btn pixel-btn-sm bg-rose-600 hover:bg-rose-500 text-white font-pixel text-[8px] py-1 px-2`;
+          kickBtn.textContent = `Keluarkan`;
+          kickBtn.title = `Keluarkan ${m.name} dari pulau`;
+          kickBtn.onclick = () => openKickModal(m.name);
+          right.appendChild(kickBtn);
+        }
+
+        row.appendChild(left);
+        row.appendChild(right);
+        container.appendChild(row);
+      });
+    }
+
+    // Kick Player Implementation
+    function openKickModal(playerName) {
+      guestToKick = playerName;
+      const modal = document.getElementById(`modal-kick`);
+      const nameEl = document.getElementById(`kick-player-name`);
+      if (nameEl) nameEl.textContent = playerName;
+      if (modal) modal.classList.remove(`hidden`);
+    }
+
+    function closeKickModal() {
+      const modal = document.getElementById(`modal-kick`);
+      if (modal) modal.classList.add(`hidden`);
+      guestToKick = null;
+    }
+
+    function confirmKickPlayer() {
+      if (!guestToKick) return;
+
+      // Remove guest from members array
+      const idx = appState.room.members.findIndex(m => m.name === guestToKick);
+      if (idx !== -1) {
+        appState.room.members.splice(idx, 1);
+      }
+
+      playKickSFX();
+      showToast(`💨 ${guestToKick} telah dikeluarkan dari pulau!`);
+      closeKickModal();
+      renderRoomMembersList();
+      persistState();
+    }
+
+    // Private Island Join Request Simulation
+    function simulateJoinRequest() {
+      const candidates = [
+        { name: `Budi Monki`, task: `Mengerjakan Kuis Biologi`, level: 2, fur: `#ca8a04`, outfit: `#2563eb` },
+        { name: `Siti Monki`, task: `Latihan Soal Fisika Bab 3`, level: 3, fur: `#f472b6`, outfit: `#dc2626` },
+        { name: `Reza Monki`, task: `Menghafal Kosakata Inggris`, level: 1, fur: `#4ade80`, outfit: `#18181b` }
+      ];
+
+      // Pick one candidate not already in room
+      const available = candidates.filter(c => !appState.room.members.some(m => m.name === c.name));
+      if (available.length === 0) {
+        showToast(`Semua teman sudah berada di pulau.`);
+        return;
+      }
+
+      const friend = available[0];
+      const banner = document.getElementById(`join-request-banner`);
+      const nameEl = document.getElementById(`join-request-name`);
+      if (banner && nameEl) {
+        nameEl.textContent = `${friend.name} ingin bergabung ke pulaumu!`;
+        banner.dataset.friendName = friend.name;
+        banner.dataset.friendTask = friend.task;
+        banner.dataset.friendLevel = friend.level;
+        banner.dataset.friendFur = friend.fur;
+        banner.dataset.friendOutfit = friend.outfit;
+        banner.classList.remove(`hidden`);
+        playCoinSFX();
+      }
+    }
+
+    function acceptJoinRequest() {
+      const banner = document.getElementById(`join-request-banner`);
+      if (!banner) return;
+
+      const newMember = {
+        id: `guest-${Date.now()}`,
+        name: banner.dataset.friendName || `Teman Monki`,
+        status: banner.dataset.friendTask || `Belajar Bersama`,
+        level: parseInt(banner.dataset.friendLevel) || 2,
+        isHost: false,
+        furColor: banner.dataset.friendFur || `#ca8a04`,
+        outfitColor: banner.dataset.friendOutfit || `#2563eb`,
+        accessory: `glasses`
+      };
+
+      appState.room.members.push(newMember);
+      banner.classList.add(`hidden`);
+      playCoinSFX();
+      showToast(`🎉 ${newMember.name} bergabung ke pulau!`);
+      renderRoomMembersList();
+      persistState();
+    }
+
+    function declineJoinRequest() {
+      const banner = document.getElementById(`join-request-banner`);
+      if (banner) banner.classList.add(`hidden`);
+      showToast(`Permintaan masuk pulau ditolak.`);
+    }
+
+    function copyRoomCode() {
+      const code = appState.room.code;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(code).then(() => {
+          showToast(`📋 Kode Room ${code} disalin ke clipboard!`);
+        });
+      } else {
+        showToast(`Kode Room: ${code}`);
+      }
+    }
+
+    function generateNewRoomCode() {
+      const randNum = Math.floor(100 + Math.random() * 900);
+      appState.room.code = `MONKE-${randNum}`;
+      const display = document.getElementById(`room-code-display`);
+      if (display) display.textContent = appState.room.code;
+      showToast(`Room baru dibuat: ${appState.room.code}`);
+      persistState();
+    }
+
+    // --- 7. ISLAND EXPANSION SYSTEM ---
+    function upgradeIslandTier(targetTier, cost) {
+      if (appState.stats.coins < cost) {
+        showToast(`🪙 Koin tidak cukup! Butuh ${cost} koin (Saldo: ${appState.stats.coins})`);
+        return;
+      }
+
+      appState.stats.coins -= cost;
+      appState.island.tier = targetTier;
+      playLevelUpSFX();
+      showToast(`🏝️ Hore! Pulau berhasil ditingkatkan ke Tier ${targetTier}!`);
+
+      updateUI();
+      persistState();
+    }
+
+    function dismissBanner() {
+      const banner = document.getElementById(`expansion-banner`);
+      if (banner) banner.classList.add(`hidden`);
+    }
+
+    // --- 8. SHOP & INVENTORY ---
+    function renderShopItems() {
+      const grid = document.getElementById(`shop-items-grid`);
+      if (!grid) return;
+      grid.innerHTML = ``;
+
+      SHOP_ITEMS.forEach(item => {
+        const isOwned = appState.island.decorations.includes(item.id) || appState.profile.equippedAccessory === item.id;
+        const isEquipped = appState.profile.equippedAccessory === item.id;
+
+        const card = document.createElement(`div`);
+        card.className = `pixel-card p-3 flex flex-col justify-between items-center text-center bg-slate-50`;
+
+        let actionBtnHTML = ``;
+        if (item.category === `consumable`) {
+          actionBtnHTML = `
+            <button onclick="buyShopItem('${item.id}', ${item.price})" class="pixel-btn pixel-btn-sm bg-amber-400 hover:bg-amber-300 text-slate-950 font-pixel text-[9px] w-full">
+              Beli: ${item.price} 🪙
+            </button>
+          `;
+        } else if (item.category === `accessory`) {
+          if (!isOwned) {
+            actionBtnHTML = `
+              <button onclick="buyShopItem('${item.id}', ${item.price})" class="pixel-btn pixel-btn-sm bg-amber-400 hover:bg-amber-300 text-slate-950 font-pixel text-[9px] w-full">
+                Beli: ${item.price} 🪙
+              </button>
+            `;
+          } else {
+            actionBtnHTML = `
+              <button onclick="toggleEquipAccessory('${item.id}')" class="pixel-btn pixel-btn-sm ${isEquipped ? `bg-emerald-600 text-white` : `bg-slate-200 text-slate-800`} font-pixel text-[9px] w-full">
+                ${isEquipped ? `Dipakai ✓` : `Pakai`}
+              </button>
+            `;
+          }
+        } else {
+          // decoration
+          if (!isOwned) {
+            actionBtnHTML = `
+              <button onclick="buyShopItem('${item.id}', ${item.price})" class="pixel-btn pixel-btn-sm bg-amber-400 hover:bg-amber-300 text-slate-950 font-pixel text-[9px] w-full">
+                Beli: ${item.price} 🪙
+              </button>
+            `;
+          } else {
+            actionBtnHTML = `
+              <span class="pixel-badge bg-emerald-100 text-emerald-800 text-[9px]">Terpasang ✓</span>
+            `;
+          }
+        }
+
+        card.innerHTML = `
+          <div class="text-3xl my-1">${item.icon}</div>
+          <div class="font-bold text-xs text-slate-900 mb-0.5">${item.name}</div>
+          <div class="text-[10px] text-slate-500 mb-2">${item.category === `accessory` ? `Aksesoris` : item.category === `consumable` ? `Konsumsi` : `Dekorasi`}</div>
+          ${actionBtnHTML}
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function buyShopItem(id, price) {
+      if (appState.stats.coins < price) {
+        showToast(`🪙 Saldo koin tidak cukup untuk membeli item ini!`);
+        return;
+      }
+
+      appState.stats.coins -= price;
+
+      if (id === `bananas_pack`) {
+        appState.island.bananas += 5;
+        playCoinSFX();
+        showToast(`🍌 5 Pisang ditambahkan ke inventaris!`);
+      } else {
+        const item = SHOP_ITEMS.find(it => it.id === id);
+        if (item && item.category === `accessory`) {
+          appState.profile.equippedAccessory = id;
+          playCoinSFX();
+          showToast(`🎩 ${item.name} dibeli dan langsung dikenakan!`);
+        } else {
+          if (!appState.island.decorations.includes(id)) {
+            appState.island.decorations.push(id);
+          }
+          playCoinSFX();
+          showToast(`🏡 Dekorasi dipasang di pulau!`);
+        }
+      }
+
+      updateUI();
+      persistState();
+    }
+
+    function toggleEquipAccessory(id) {
+      if (appState.profile.equippedAccessory === id) {
+        appState.profile.equippedAccessory = `none`;
+        showToast(`Aksesoris dilepas.`);
+      } else {
+        appState.profile.equippedAccessory = id;
+        showToast(`Aksesoris dipakai.`);
+      }
+      play8BitTone(600, 0.08, `sine`);
+      updateUI();
+      persistState();
+    }
+
+    // --- 9. TASKS (TO-DO LIST) ---
+    function renderTasksList() {
+      const container = document.getElementById(`tasks-list-container`);
+      const counterEl = document.getElementById(`task-completed-counter`);
+      const activeBadge = document.getElementById(`active-task-badge`);
+      if (!container) return;
+      container.innerHTML = ``;
+
+      const completedCount = appState.tasks.filter(t => t.completed).length;
+      if (counterEl) {
+        counterEl.textContent = `${completedCount} dari ${appState.tasks.length} tugas selesai`;
+      }
+
+      const active = appState.tasks.find(t => t.id === appState.activeTaskId);
+      if (activeBadge && active) {
+        activeBadge.textContent = active.text;
+      }
+
+      appState.tasks.forEach(t => {
+        const item = document.createElement(`div`);
+        item.className = `p-2.5 border-2 ${t.id === appState.activeTaskId ? `border-amber-500 bg-amber-50/50` : `border-slate-300 bg-white`} flex flex-wrap items-center justify-between gap-2 text-xs`;
+
+        let priorityBadge = ``;
+        if (t.priority === `high`) priorityBadge = `<span class="pixel-badge bg-rose-500 text-white text-[8px]">Tinggi</span>`;
+        if (t.priority === `medium`) priorityBadge = `<span class="pixel-badge bg-amber-400 text-slate-950 text-[8px]">Sedang</span>`;
+        if (t.priority === `low`) priorityBadge = `<span class="pixel-badge bg-emerald-500 text-white text-[8px]">Rendah</span>`;
+
+        item.innerHTML = `
+          <div class="flex items-center gap-2.5 flex-grow">
+            <input type="checkbox" ${t.completed ? `checked` : ``} onchange="toggleTaskComplete(${t.id})" class="w-4 h-4 accent-emerald-600 rounded-none cursor-pointer" aria-label="Tandai tugas selesai">
+            <span class="${t.completed ? `line-through text-slate-400` : `text-slate-800 font-medium`}">${t.text}</span>
+            ${priorityBadge}
+            <span class="text-[10px] text-slate-500">🍅 ${t.pomodoros} sesi</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button onclick="setActiveTask(${t.id})" class="pixel-btn pixel-btn-sm ${t.id === appState.activeTaskId ? `bg-amber-400 text-slate-950` : `bg-slate-100 hover:bg-slate-200 text-slate-800`} font-pixel text-[8px]">
+              ${t.id === appState.activeTaskId ? `Aktif ⭐` : `Pilih`}
+            </button>
+            <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-rose-600 p-1" title="Hapus Tugas" aria-label="Hapus Tugas">✕</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function addNewTask(e) {
+      e.preventDefault();
+      const input = document.getElementById(`new-task-input`);
+      const prio = document.getElementById(`new-task-priority`);
+      const pomo = document.getElementById(`new-task-pomo`);
+
+      if (!input || !input.value.trim()) return;
+
+      const newTask = {
+        id: Date.now(),
+        text: input.value.trim(),
+        priority: prio ? prio.value : `medium`,
+        pomodoros: pomo ? parseInt(pomo.value) : 2,
+        completed: false
+      };
+
+      appState.tasks.push(newTask);
+      input.value = ``;
+      play8BitTone(700, 0.08, `sine`);
+      showToast(`Tugas baru ditambahkan!`);
+      renderTasksList();
+      persistState();
+    }
+
+    function toggleTaskComplete(id) {
+      const task = appState.tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        if (task.completed) {
+          appState.stats.coins += 5;
+          playCoinSFX();
+          showToast(`Tugas selesai! (+5 Koin)`);
+        }
+        renderTasksList();
+        persistState();
+      }
+    }
+
+    function setActiveTask(id) {
+      appState.activeTaskId = id;
+      play8BitTone(600, 0.08, `sine`);
+      renderTasksList();
+      persistState();
+    }
+
+    function deleteTask(id) {
+      appState.tasks = appState.tasks.filter(t => t.id !== id);
+      if (appState.activeTaskId === id && appState.tasks.length > 0) {
+        appState.activeTaskId = appState.tasks[0].id;
+      }
+      renderTasksList();
+      persistState();
+    }
+
+    // --- 10. DAILY CHECK-IN & STREAK ---
+    function renderWeeklyCalendar() {
+      const grid = document.getElementById(`weekly-calendar-grid`);
+      if (!grid) return;
+      grid.innerHTML = ``;
+
+      const days = [`Senin`, `Selasa`, `Rabu`, `Kamis`, `Jumat`, `Sabtu`, `Minggu`];
+      const todayIdx = 4; // Simulated Friday/Saturday
+
+      days.forEach((day, idx) => {
+        const isPast = idx < todayIdx;
+        const isToday = idx === todayIdx;
+
+        const cell = document.createElement(`div`);
+        cell.className = `p-2 border-2 ${isToday ? `border-orange-500 bg-orange-50` : isPast ? `border-emerald-500 bg-emerald-50` : `border-slate-300 bg-slate-50`} flex flex-col items-center justify-center text-xs`;
+
+        cell.innerHTML = `
+          <span class="text-[10px] font-bold text-slate-700">${day}</span>
+          <div class="my-1 text-base">
+            ${isPast ? `✅` : isToday ? (appState.stats.dailyCheckinClaimed ? `✅` : `🔥`) : `🔒`}
+          </div>
+          <span class="text-[9px] text-slate-500">${isToday ? `Hari Ini` : isPast ? `Hadir` : `+50 🪙`}</span>
+        `;
+        grid.appendChild(cell);
+      });
+
+      const claimBtn = document.getElementById(`btn-claim-daily`);
+      if (claimBtn) {
+        if (appState.stats.dailyCheckinClaimed) {
+          claimBtn.disabled = true;
+          claimBtn.textContent = `✓ Hadiah Harian Sudah Diklaim`;
+          claimBtn.className = `pixel-btn pixel-btn-sm bg-slate-200 text-slate-500 font-pixel text-[10px] cursor-not-allowed`;
+        } else {
+          claimBtn.disabled = false;
+          claimBtn.textContent = `🎁 Klaim Hadiah Harian (+50 Koin)`;
+          claimBtn.className = `pixel-btn pixel-btn-sm bg-amber-400 hover:bg-amber-300 text-slate-950 font-pixel text-[10px]`;
+        }
+      }
+    }
+
+    function claimDailyReward() {
+      if (appState.stats.dailyCheckinClaimed) return;
+
+      appState.stats.dailyCheckinClaimed = true;
+      appState.stats.coins += 50;
+      appState.stats.activeStreak++;
+      if (appState.stats.activeStreak > appState.stats.longestStreak) {
+        appState.stats.longestStreak = appState.stats.activeStreak;
+      }
+
+      playCoinSFX();
+      showToast(`🎁 Selamat! +50 Koin diklaim dan streak bertambah!`);
+      updateUI();
+      persistState();
+    }
+
+    // --- 11. QUIZ & FLASHCARD MINIGAME ---
+    let currentQuizIndex = 0;
+    let quizStreak = 3;
+
+    function renderCurrentQuiz() {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      if (!q) return;
+
+      const subjectTag = document.getElementById(`quiz-subject-tag`);
+      const questionText = document.getElementById(`quiz-question-text`);
+      const optionsContainer = document.getElementById(`quiz-options-container`);
+      const feedbackBox = document.getElementById(`quiz-feedback-box`);
+      const streakEl = document.getElementById(`quiz-score-streak`);
+
+      if (subjectTag) subjectTag.textContent = q.label;
+      if (questionText) questionText.textContent = q.q;
+      if (streakEl) streakEl.textContent = `Streak Kuis: ${quizStreak} 🔥`;
+      if (feedbackBox) feedbackBox.classList.add(`hidden`);
+
+      if (optionsContainer) {
+        optionsContainer.innerHTML = ``;
+        q.options.forEach((opt, idx) => {
+          const btn = document.createElement(`button`);
+          btn.className = `pixel-btn pixel-btn-sm bg-slate-800 hover:bg-slate-700 text-slate-100 font-pixel text-[10px] text-left p-2.5`;
+          btn.textContent = `${String.fromCharCode(65 + idx)}. ${opt}`;
+          btn.onclick = () => checkQuizAnswer(idx);
+          optionsContainer.appendChild(btn);
+        });
+      }
+    }
+
+    function checkQuizAnswer(selectedIdx) {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      const feedbackBox = document.getElementById(`quiz-feedback-box`);
+      const optionsContainer = document.getElementById(`quiz-options-container`);
+
+      if (!q || !feedbackBox || !optionsContainer) return;
+
+      // Disable buttons
+      const buttons = optionsContainer.querySelectorAll(`button`);
+      buttons.forEach(b => b.disabled = true);
+
+      if (selectedIdx === q.correct) {
+        // Correct
+        quizStreak++;
+        appState.stats.coins += 10;
+        appState.profile.xp += 15;
+        playCoinSFX();
+
+        buttons[selectedIdx].classList.remove(`bg-slate-800`);
+        buttons[selectedIdx].classList.add(`bg-emerald-600`, `text-white`);
+
+        feedbackBox.className = `mt-3 p-2.5 text-xs text-left border-2 border-emerald-400 bg-emerald-950 text-emerald-200 block`;
+        feedbackBox.innerHTML = `
+          <strong>Jawaban Benar! 🎉 (+10 Koin, +15 XP)</strong><br>
+          ${q.explanation}
+        `;
+        showToast(`Jawaban Benar! +10 Koin`);
+      } else {
+        // Wrong
+        quizStreak = 0;
+        play8BitTone(180, 0.25, `sawtooth`);
+
+        buttons[selectedIdx].classList.remove(`bg-slate-800`);
+        buttons[selectedIdx].classList.add(`bg-rose-600`, `text-white`);
+        buttons[q.correct].classList.remove(`bg-slate-800`);
+        buttons[q.correct].classList.add(`bg-emerald-600`, `text-white`);
+
+        feedbackBox.className = `mt-3 p-2.5 text-xs text-left border-2 border-rose-400 bg-rose-950 text-rose-200 block`;
+        feedbackBox.innerHTML = `
+          <strong>Kurang Tepat! 💡</strong><br>
+          Jawaban yang benar adalah <em>${q.options[q.correct]}</em>.<br>
+          ${q.explanation}
+        `;
+      }
+
+      updateUI();
+      persistState();
+    }
+
+    function nextQuizQuestion() {
+      currentQuizIndex = (currentQuizIndex + 1) % QUIZ_QUESTIONS.length;
+      play8BitTone(600, 0.05, `sine`);
+      renderCurrentQuiz();
+    }
+
+    function loadQuizSubject(val) {
+      if (val === `all`) {
+        currentQuizIndex = 0;
+      } else {
+        const foundIdx = QUIZ_QUESTIONS.findIndex(q => q.subject === val);
+        currentQuizIndex = foundIdx !== -1 ? foundIdx : 0;
+      }
+      renderCurrentQuiz();
+    }
+
+    // --- 12. WELLNESS & POSTURE REMINDERS ---
+    function renderWaterIcons() {
+      const container = document.getElementById(`water-glasses-icons`);
+      const fractionEl = document.getElementById(`water-fraction`);
+      if (!container) return;
+      container.innerHTML = ``;
+
+      if (fractionEl) fractionEl.textContent = `${appState.wellness.waterGlasses} / ${appState.wellness.waterTarget} Gelas`;
+
+      for (let i = 1; i <= appState.wellness.waterTarget; i++) {
+        const span = document.createElement(`span`);
+        span.className = `text-lg ${i <= appState.wellness.waterGlasses ? `opacity-100` : `opacity-30`}`;
+        span.textContent = `🥛`;
+        container.appendChild(span);
+      }
+    }
+
+    function logWaterGlass() {
+      if (appState.wellness.waterGlasses < appState.wellness.waterTarget) {
+        appState.wellness.waterGlasses++;
+        play8BitTone(800, 0.1, `sine`);
+        showToast(`💧 Hebat! 1 gelas air diminum (+hidrasi otak)`);
+      } else {
+        showToast(`Target air minum hari ini sudah tercapai sempurna! 💧`);
+      }
+      renderWaterIcons();
+      persistState();
+    }
+
+    function completeStretching() {
+      playCoinSFX();
+      showToast(`🧘 Peregangan selesai! Postur tubuh kembali rileks.`);
+    }
+
+    let eyeInterval = null;
+    function startEyeRestTimer() {
+      const display = document.getElementById(`eye-timer-display`);
+      const btn = document.getElementById(`btn-eye-rest`);
+      if (!display || !btn) return;
+
+      btn.disabled = true;
+      let count = 20;
+
+      if (eyeInterval) clearInterval(eyeInterval);
+      eyeInterval = setInterval(() => {
+        count--;
+        display.textContent = `${count} Detik`;
+        if (count <= 0) {
+          clearInterval(eyeInterval);
+          playBellSFX();
+          display.textContent = `Mata Segar! ✓`;
+          btn.disabled = false;
+          showToast(`👀 Istirahat mata 20-20-20 selesai!`);
+        }
+      }, 1000);
+    }
+
+    // --- 13. LEADERBOARD SYSTEM ---
+    const MOCK_LEADERBOARD = [
+      { rank: 1, student: `Aulia Rahma`, monki: `Chiko Monki`, task: `Membahas Soal UTBK Kimia`, minutes: 620, streak: 14, tier: 3 },
+      { rank: 2, student: `Bintang Pratama`, monki: `Kimi Monki`, task: `Coding Python Algoritma`, minutes: 540, streak: 9, tier: 2 },
+      { rank: 3, student: `Siti Monki`, monki: `Mochi Monki`, task: `Fisika Gelombang Elektromagnetik`, minutes: 480, streak: 7, tier: 2 }
+    ];
+
+    function renderLeaderboard() {
+      const tbody = document.getElementById(`leaderboard-table-body`);
+      if (!tbody) return;
+      tbody.innerHTML = ``;
+
+      // Build complete table including user
+      const fullList = [
+        ...MOCK_LEADERBOARD,
+        {
+          rank: 4,
+          student: `${appState.profile.studentName} (Kamu)`,
+          monki: appState.profile.monkiName,
+          task: appState.tasks.find(t => t.id === appState.activeTaskId)?.text || `Tinjau Materi`,
+          minutes: appState.stats.totalFocusMinutes,
+          streak: appState.stats.activeStreak,
+          tier: appState.island.tier,
+          isUser: true
+        }
+      ];
+
+      // Sort by minutes
+      fullList.sort((a, b) => b.minutes - a.minutes);
+
+      fullList.forEach((item, index) => {
+        const row = document.createElement(`tr`);
+        row.className = item.isUser ? `bg-amber-100 font-semibold border-2 border-amber-500` : `hover:bg-slate-50`;
+
+        let rankBadge = `${index + 1}`;
+        if (index === 0) rankBadge = `🥇 1`;
+        if (index === 1) rankBadge = `🥈 2`;
+        if (index === 2) rankBadge = `🥉 3`;
+
+        row.innerHTML = `
+          <td class="p-2.5 font-pixel text-[10px]">${rankBadge}</td>
+          <td class="p-2.5">
+            <span class="font-bold text-slate-900 block">${item.student}</span>
+            <span class="text-[10px] text-slate-500">🐵 ${item.monki}</span>
+          </td>
+          <td class="p-2.5 text-slate-600 truncate max-w-[180px]">${item.task}</td>
+          <td class="p-2.5 text-right font-pixel text-[10px] text-sky-700">${item.minutes}m</td>
+          <td class="p-2.5 text-right text-orange-600 font-semibold">🔥 ${item.streak}h</td>
+          <td class="p-2.5 text-center font-pixel text-[9px]">Tier ${item.tier}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function syncLeaderboardToSupabase() {
+      play8BitTone(700, 0.1, `sine`);
+      showToast(`🔄 Data skor Anda disinkronkan ke Supabase Realtime!`);
+      renderLeaderboard();
+    }
+
+    // --- 14. EXPORT & BACKUP ENGINE ---
+    function exportHistoryCSV() {
+      let csvContent = `Tanggal,Waktu_Mulai,Durasi_Menit,Nama_Tugas,Koin_Didapat\n`;
+      appState.history.forEach(h => {
+        csvContent += `"${h.date}","${h.time}",${h.duration},"${h.task.replace(/"/g, '""')}",${h.coins}\n`;
+      });
+
+      if (window.notebookAppApi && window.notebookAppApi.triggerFileDownload) {
+        window.notebookAppApi.triggerFileDownload({
+          content: csvContent,
+          contentType: `text/csv`,
+          encoding: `UTF-8`,
+          filename: `study_verse_sesi_belajar.csv`
+        });
+      } else {
+        const blob = new Blob([csvContent], { type: `text/csv;charset=utf-8;` });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement(`a`);
+        link.setAttribute(`href`, url);
+        link.setAttribute(`download`, `study_verse_sesi_belajar.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      showToast(`📥 Berkas CSV sesi belajar berhasil diunduh!`);
+    }
+
+    function exportStateJSON() {
+      const jsonStr = JSON.stringify(appState, null, 2);
+
+      if (window.notebookAppApi && window.notebookAppApi.triggerFileDownload) {
+        window.notebookAppApi.triggerFileDownload({
+          content: jsonStr,
+          contentType: `text/plain`,
+          encoding: `UTF-8`,
+          filename: `study_verse_backup_akun.json`
+        });
+      } else {
+        const blob = new Blob([jsonStr], { type: `application/json;charset=utf-8;` });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement(`a`);
+        link.setAttribute(`href`, url);
+        link.setAttribute(`download`, `study_verse_backup_akun.json`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      showToast(`💾 Cadangan JSON lengkap berhasil diunduh!`);
+    }
+
+    function confirmResetHistory() {
+      if (confirm(`Apakah Anda yakin ingin mengatur ulang riwayat sesi belajar? Koin dan profil Anda tetap aman.`)) {
+        appState.history = [];
+        showToast(`Riwayat sesi belajar telah direset.`);
+        persistState();
+      }
+    }
+
+    // --- 15. ONBOARDING TUTORIAL TYPEWRITER ---
+    const TUTORIAL_STEPS = [
+      {
+        speaker: `Profesor Monki`,
+        text: `Selamat datang di Study-Verse! Pulaumu sendiri untuk fokus belajar, membangun konsistensi, dan bersenang-senang.`
+      },
+      {
+        speaker: `Profesor Monki`,
+        text: `Gunakan Timer Pomodoro untuk belajar tanpa distraksi. Setiap 25 menit fokus, kamu mendapatkan 20 Koin dan 25 XP!`
+      },
+      {
+        speaker: `Profesor Monki`,
+        text: `Beri makan pisang pada Monki secara berkala. Monki yang bahagia akan memberimu dorongan motivasi ekstra.`
+      },
+      {
+        speaker: `Profesor Monki`,
+        text: `Perluas pulaumu ke Tier berikutnya untuk membuka tempat dekorasi baru dan mengundang teman belajar bersama!`
+      },
+      {
+        speaker: `Profesor Monki`,
+        text: `Kustomisasi warna karaktermu dan mulai sesi fokus pertamamu sekarang. Ayo jadi pelajar legendaris!`
+      }
+    ];
+
+    let currentTutorialStep = 0;
+    let typewriterTimeout = null;
+
+    function startOnboardingTutorial(force = false) {
+      if (appState.tutorialCompleted && !force) return;
+      currentTutorialStep = 0;
+      const modal = document.getElementById(`modal-onboarding`);
+      if (modal) modal.classList.remove(`hidden`);
+      renderTutorialStep();
+    }
+
+    function renderTutorialStep() {
+      const step = TUTORIAL_STEPS[currentTutorialStep];
+      if (!step) return;
+
+      const speakerEl = document.getElementById(`tutorial-speaker-name`);
+      const textEl = document.getElementById(`typewriter-text`);
+      const stepIndicator = document.getElementById(`onboarding-step-indicator`);
+      const prevBtn = document.getElementById(`btn-prev-tutorial`);
+      const nextBtn = document.getElementById(`btn-next-tutorial`);
+
+      if (speakerEl) speakerEl.textContent = `${step.speaker}:`;
+      if (stepIndicator) stepIndicator.textContent = `Langkah ${currentTutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
+      if (prevBtn) prevBtn.disabled = currentTutorialStep === 0;
+      if (nextBtn) {
+        nextBtn.textContent = currentTutorialStep === TUTORIAL_STEPS.length - 1 ? `Mulai Belajar! 🚀` : `Lanjut ➡️`;
+      }
+
+      // Typewriter effect
+      if (textEl) {
+        textEl.textContent = ``;
+        if (typewriterTimeout) clearTimeout(typewriterTimeout);
+
+        let charIdx = 0;
+        function typeChar() {
+          if (charIdx < step.text.length) {
+            textEl.textContent += step.text.charAt(charIdx);
+            playTypewriterSFX();
+            charIdx++;
+            typewriterTimeout = setTimeout(typeChar, 28);
+          }
+        }
+        typeChar();
+      }
+    }
+
+    function nextOnboardingStep() {
+      if (currentTutorialStep < TUTORIAL_STEPS.length - 1) {
+        currentTutorialStep++;
+        renderTutorialStep();
+      } else {
+        skipOnboardingTutorial();
+      }
+    }
+
+    function prevOnboardingStep() {
+      if (currentTutorialStep > 0) {
+        currentTutorialStep--;
+        renderTutorialStep();
+      }
+    }
+
+    function skipOnboardingTutorial() {
+      if (typewriterTimeout) clearTimeout(typewriterTimeout);
+      const modal = document.getElementById(`modal-onboarding`);
+      if (modal) modal.classList.add(`hidden`);
+      appState.tutorialCompleted = true;
+      persistState();
+      playCoinSFX();
+      showToast(`Panduan selesai. Selamat belajar!`);
+    }
+
+    // --- 16. COLOR & PALETTE CUSTOMIZATION MODAL ---
+    function openColorModal() {
+      renderColorSwatches();
+      const modal = document.getElementById(`modal-color`);
+      if (modal) modal.classList.remove(`hidden`);
+    }
+
+    function closeColorModal() {
+      const modal = document.getElementById(`modal-color`);
+      if (modal) modal.classList.add(`hidden`);
+    }
+
+    function renderColorSwatches() {
+      // 1. Fur Swatches
+      const furGrid = document.getElementById(`fur-color-palette`);
+      if (furGrid) {
+        furGrid.innerHTML = ``;
+        FUR_COLORS.forEach(f => {
+          const btn = document.createElement(`button`);
+          const isSelected = appState.profile.furColor === f.hex;
+          btn.className = `p-2 border-2 ${isSelected ? `border-slate-900 bg-amber-100 ring-2 ring-slate-900` : `border-slate-300 bg-white`} flex items-center gap-2 text-xs`;
+          btn.innerHTML = `
+            <span class="w-5 h-5 rounded-none border border-slate-900" style="background-color: ${f.hex}"></span>
+            <span class="font-medium truncate">${f.name}</span>
+          `;
+          btn.onclick = () => {
+            appState.profile.furColor = f.hex;
+            appState.profile.furName = f.name;
+            // update host in room
+            const host = appState.room.members.find(m => m.isHost);
+            if (host) host.furColor = f.hex;
+            play8BitTone(600, 0.05, `sine`);
+            renderColorSwatches();
+            persistState();
+          };
+          furGrid.appendChild(btn);
+        });
+      }
+
+      // 2. Outfit Swatches
+      const outfitGrid = document.getElementById(`outfit-color-palette`);
+      if (outfitGrid) {
+        outfitGrid.innerHTML = ``;
+        OUTFIT_COLORS.forEach(o => {
+          const btn = document.createElement(`button`);
+          const isSelected = appState.profile.outfitColor === o.hex;
+          btn.className = `p-2 border-2 ${isSelected ? `border-slate-900 bg-amber-100 ring-2 ring-slate-900` : `border-slate-300 bg-white`} flex items-center gap-2 text-xs`;
+          btn.innerHTML = `
+            <span class="w-5 h-5 rounded-none border border-slate-900" style="background-color: ${o.hex}"></span>
+            <span class="font-medium truncate">${o.name}</span>
+          `;
+          btn.onclick = () => {
+            appState.profile.outfitColor = o.hex;
+            appState.profile.outfitName = o.name;
+            const host = appState.room.members.find(m => m.isHost);
+            if (host) host.outfitColor = o.hex;
+            play8BitTone(650, 0.05, `sine`);
+            renderColorSwatches();
+            persistState();
+          };
+          outfitGrid.appendChild(btn);
+        });
+      }
+
+      // 3. Island Theme Swatches
+      const themeGrid = document.getElementById(`island-theme-palette`);
+      if (themeGrid) {
+        themeGrid.innerHTML = ``;
+        ISLAND_THEMES.forEach(t => {
+          const btn = document.createElement(`button`);
+          const isSelected = appState.profile.islandTheme === t.id;
+          btn.className = `p-2.5 border-2 ${isSelected ? `border-slate-900 bg-amber-100 ring-2 ring-slate-900` : `border-slate-300 bg-white`} flex items-center justify-between text-xs`;
+          btn.innerHTML = `
+            <span class="font-bold text-slate-900">${t.name}</span>
+            <div class="flex gap-1">
+              <span class="w-4 h-4 border border-black" style="background-color: ${t.grass}"></span>
+              <span class="w-4 h-4 border border-black" style="background-color: ${t.sand}"></span>
+              <span class="w-4 h-4 border border-black" style="background-color: ${t.ocean}"></span>
+            </div>
+          `;
+          btn.onclick = () => {
+            appState.profile.islandTheme = t.id;
+            const themeBadge = document.getElementById(`canvas-theme-badge`);
+            if (themeBadge) themeBadge.textContent = `Tema: ${t.name}`;
+            play8BitTone(700, 0.05, `sine`);
+            renderColorSwatches();
+            persistState();
+          };
+          themeGrid.appendChild(btn);
+        });
+      }
+    }
+
+    // --- 17. USER PROFILE MODAL ---
+    function openProfileModal() {
+      const studentInput = document.getElementById(`prof-student-name`);
+      const monkiInput = document.getElementById(`prof-monki-name`);
+      const levelDisplay = document.getElementById(`prof-level-display`);
+      const joinDateInput = document.getElementById(`prof-join-date`);
+      const schoolLevel = document.getElementById(`prof-school-level`);
+      const bioText = document.getElementById(`prof-bio`);
+
+      if (studentInput) studentInput.value = appState.profile.studentName;
+      if (monkiInput) monkiInput.value = appState.profile.monkiName;
+      if (levelDisplay) levelDisplay.value = `Level ${appState.profile.level}`;
+      if (joinDateInput) joinDateInput.value = appState.profile.joinDate;
+      if (schoolLevel) schoolLevel.value = appState.profile.schoolLevel;
+      if (bioText) bioText.value = appState.profile.bio;
+
+      renderProfileSubjectCheckboxes();
+
+      const modal = document.getElementById(`modal-profile`);
+      if (modal) modal.classList.remove(`hidden`);
+    }
+
+    function closeProfileModal() {
+      const modal = document.getElementById(`modal-profile`);
+      if (modal) modal.classList.add(`hidden`);
+    }
+
+    function renderProfileSubjectCheckboxes() {
+      const container = document.getElementById(`prof-subjects-container`);
+      if (!container) return;
+      container.innerHTML = ``;
+
+      const allSubjects = [
+        `Matematika`,
+        `IPA / Fisika`,
+        `Biologi`,
+        `Bahasa Indonesia`,
+        `Bahasa Inggris`,
+        `Sejarah`,
+        `Informatika`
+      ];
+
+      allSubjects.forEach(sub => {
+        const isChecked = appState.profile.subjects.includes(sub);
+        const label = document.createElement(`label`);
+        label.className = `flex items-center gap-2 p-1 bg-slate-50 border border-slate-200 cursor-pointer`;
+        label.innerHTML = `
+          <input type="checkbox" value="${sub}" ${isChecked ? `checked` : ``} class="accent-sky-600">
+          <span class="text-[11px] text-slate-800">${sub}</span>
+        `;
+        container.appendChild(label);
+      });
+    }
+
+    function saveUserProfile(e) {
+      e.preventDefault();
+      const studentInput = document.getElementById(`prof-student-name`);
+      const monkiInput = document.getElementById(`prof-monki-name`);
+      const schoolLevel = document.getElementById(`prof-school-level`);
+      const bioText = document.getElementById(`prof-bio`);
+      const container = document.getElementById(`prof-subjects-container`);
+
+      if (studentInput) appState.profile.studentName = studentInput.value.trim();
+      if (monkiInput) {
+        appState.profile.monkiName = monkiInput.value.trim();
+        const host = appState.room.members.find(m => m.isHost);
+        if (host) host.name = `${appState.profile.monkiName} (Kamu)`;
+      }
+      if (schoolLevel) appState.profile.schoolLevel = schoolLevel.value;
+      if (bioText) appState.profile.bio = bioText.value.trim();
+
+      if (container) {
+        const checkedBoxes = container.querySelectorAll(`input[type="checkbox"]:checked`);
+        appState.profile.subjects = Array.from(checkedBoxes).map(cb => cb.value);
+      }
+
+      playCoinSFX();
+      showToast(`Profil berhasil diperbarui!`);
+      closeProfileModal();
+      updateUI();
+      persistState();
+    }
+
+    // --- 18. SUPABASE CONFIGURATION MODAL ---
+    function openSupabaseModal() {
+      const urlInput = document.getElementById(`supabase-url-input`);
+      const keyInput = document.getElementById(`supabase-key-input`);
+      if (urlInput) urlInput.value = appState.supabase.url || ``;
+      if (keyInput) keyInput.value = appState.supabase.key || ``;
+
+      const modal = document.getElementById(`modal-supabase`);
+      if (modal) modal.classList.remove(`hidden`);
+    }
+
+    function closeSupabaseModal() {
+      const modal = document.getElementById(`modal-supabase`);
+      if (modal) modal.classList.add(`hidden`);
+    }
+
+    function saveSupabaseConfig() {
+      const urlInput = document.getElementById(`supabase-url-input`);
+      const keyInput = document.getElementById(`supabase-key-input`);
+
+      if (urlInput) appState.supabase.url = urlInput.value.trim();
+      if (keyInput) appState.supabase.key = keyInput.value.trim();
+
+      playCoinSFX();
+      showToast(`Konfigurasi saluran Supabase tersimpan!`);
+      closeSupabaseModal();
+      persistState();
+    }
+
+    function copySQLSchema() {
+      const sqlText = `CREATE TABLE profiles (id UUID PRIMARY KEY, student_name TEXT, monki_name TEXT, school_level TEXT, level INT, coins INT);\nCREATE TABLE rooms (id TEXT PRIMARY KEY, host_id TEXT, island_tier INT, max_members INT);\nCREATE TABLE chats (id BIGSERIAL PRIMARY KEY, room_code TEXT, sender_name TEXT, message TEXT, created_at TIMESTAMPTZ);\nCREATE TABLE leaderboard (id BIGSERIAL PRIMARY KEY, student_name TEXT, monki_name TEXT, focus_minutes INT, streak_days INT, island_tier INT);`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(sqlText).then(() => {
+          showToast(`📋 Skrip SQL skema berhasil disalin!`);
+        });
+      } else {
+        showToast(`Skrip SQL siap diterapkan.`);
+      }
+    }
+
+    // --- 19. UI SYNC & TABS SWITCHER ---
+    function switchTab(tabId) {
+      const tabs = document.querySelectorAll(`.tab-content`);
+      const btns = document.querySelectorAll(`.tab-btn`);
+
+      tabs.forEach(t => t.classList.add(`hidden`));
+      btns.forEach(b => {
+        b.classList.remove(`active`, `bg-slate-900`, `text-white`);
+        b.classList.add(`bg-slate-100`, `text-slate-900`);
+      });
+
+      const activeContent = document.getElementById(tabId);
+      const activeBtn = document.getElementById(`btn-${tabId}`);
+
+      if (activeContent) activeContent.classList.remove(`hidden`);
+      if (activeBtn) {
+        activeBtn.classList.add(`active`, `bg-slate-900`, `text-white`);
+        activeBtn.classList.remove(`bg-slate-100`, `text-slate-900`);
+      }
+
+      play8BitTone(500, 0.04, `sine`);
+    }
+
+    function updateUI() {
+      // Header badges
+      const hCoins = document.getElementById(`header-coins`);
+      const hLevel = document.getElementById(`header-level`);
+      const hStreak = document.getElementById(`header-streak`);
+      const hTier = document.getElementById(`header-tier`);
+      const shopBalance = document.getElementById(`shop-coin-balance`);
+      const vitalsLevel = document.getElementById(`vitals-level-num`);
+      const btnBanana = document.getElementById(`btn-banana-count`);
+
+      if (hCoins) hCoins.textContent = appState.stats.coins;
+      if (hLevel) hLevel.textContent = appState.profile.level;
+      if (hStreak) hStreak.textContent = appState.stats.activeStreak;
+      if (hTier) hTier.textContent = `Pulau Tier ${appState.island.tier} (${getGridDimensions()}x${getGridDimensions()})`;
+      if (shopBalance) shopBalance.textContent = appState.stats.coins;
+      if (vitalsLevel) vitalsLevel.textContent = appState.profile.level;
+      if (btnBanana) btnBanana.textContent = appState.island.bananas;
+
+      // Happiness Bar
+      const hapVal = document.getElementById(`happiness-val`);
+      const hapBar = document.getElementById(`happiness-bar`);
+      if (hapVal) hapVal.textContent = `${appState.island.happiness}%`;
+      if (hapBar) hapBar.style.width = `${appState.island.happiness}%`;
+
+      // XP Bar
+      const xpVal = document.getElementById(`xp-val`);
+      const xpBar = document.getElementById(`xp-bar`);
+      const xpPercent = Math.min(100, Math.round((appState.profile.xp / appState.profile.xpTarget) * 100));
+      if (xpVal) xpVal.textContent = `${appState.profile.xp} / ${appState.profile.xpTarget} XP`;
+      if (xpBar) xpBar.style.width = `${xpPercent}%`;
+
+      // Streak Tab Cards
+      const scActive = document.getElementById(`streak-card-active`);
+      const scLongest = document.getElementById(`streak-card-longest`);
+      const scMinutes = document.getElementById(`streak-card-minutes`);
+      if (scActive) scActive.textContent = appState.stats.activeStreak;
+      if (scLongest) scLongest.textContent = appState.stats.longestStreak;
+      if (scMinutes) scMinutes.textContent = appState.stats.totalFocusMinutes;
+
+      // Canvas Badges
+      const cTier = document.getElementById(`canvas-tier-badge`);
+      const cTheme = document.getElementById(`canvas-theme-badge`);
+      const themePalette = getThemePalette();
+      if (cTier) cTier.textContent = `Tier ${appState.island.tier}: ${getGridDimensions()}x${getGridDimensions()} Petak`;
+      if (cTheme) cTheme.textContent = `Tema: ${themePalette.name}`;
+
+      // Re-render components
+      renderTasksList();
+      renderShopItems();
+      renderWeeklyCalendar();
+      renderCurrentQuiz();
+      renderWaterIcons();
+      renderLeaderboard();
+      renderRoomMembersList();
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById(`toast-container`);
+      if (!container) return;
+
+      const toast = document.createElement(`div`);
+      toast.className = `p-2.5 bg-slate-900 text-white border-2 border-amber-400 font-pixel text-[9px] shadow-[0_2px_0_#000] pointer-events-auto flex items-center gap-2 max-w-xs transition-opacity duration-300`;
+      toast.innerHTML = `<span>⚡</span><span>${msg}</span>`;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = `0`;
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 3200);
+    }
+
+    // --- 20. NOTEBOOK APP API PERSISTENCE ---
+    async function loadPersistedState() {
+      try {
+        if (window.notebookAppApi && window.notebookAppApi.getAppState) {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === `object`) {
+            appState = Object.assign(appState, saved);
+          }
+        }
+      } catch (err) {
+        console.warn(`Could not load state from notebookAppApi`, err);
+      }
+    }
+
+    async function persistState() {
+      try {
+        if (window.notebookAppApi && window.notebookAppApi.setAppState) {
+          await window.notebookAppApi.setAppState(appState);
+        }
+      } catch (err) {
+        console.warn(`Could not save state to notebookAppApi`, err);
+      }
+    }
+
+    // --- 21. APP BOOTSTRAP ---
+    window.addEventListener(`DOMContentLoaded`, async () => {
+      // 1. Load state
+      await loadPersistedState();
+
+      // 2. Initialize Canvas & Visuals
+      resizeCanvas();
+      window.addEventListener(`resize`, resizeCanvas);
+
+      // 3. Initialize Room with ONLY HOST initially
+      initRoomMembers();
+
+      // 4. Update UI
+      updateUI();
+      updateTimerDisplay();
+
+      // 5. Start Canvas render loop
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      renderCanvasScene();
+
+      // 6. Lucide icons
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      // 7. Notify app ready
+      if (window.notebookAppApi && window.notebookAppApi.notifyAppReady) {
+        window.notebookAppApi.notifyAppReady();
+      }
+
+      // 8. Start onboarding tutorial if not completed
+      if (!appState.tutorialCompleted) {
+        setTimeout(() => {
+          startOnboardingTutorial();
+        }, 600);
+      }
+    });
+  </script>
+</body>
+</html>
