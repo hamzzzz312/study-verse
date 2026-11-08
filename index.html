@@ -3312,8 +3312,8 @@ CREATE TABLE leaderboard (id BIGSERIAL PRIMARY KEY, student_name TEXT, monki_nam
 
     // --- 18. SUPABASE CONFIGURATION MODAL ---
     function openSupabaseModal() {
-      const urlInput = document.getElementById(`supabase-url-input`);
-      const keyInput = document.getElementById(`supabase-key-input`);
+      const urlInput = document.getElementById(`https://jkwghwjvusgnaqcuxwyd.supabase.co/rest/v1/`);
+      const keyInput = document.getElementById(`sb_publishable_QtBzrOxd4SLO_kh6Zg5f4g_dpDpOZE6`);
       if (urlInput) urlInput.value = appState.supabase.url || ``;
       if (keyInput) keyInput.value = appState.supabase.key || ``;
 
