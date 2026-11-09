@@ -1398,99 +1398,11 @@
     let audioCtx = null;
     let isMasterMuted = false;
 
-
-    let ambientAudios = {
-      rain: null,
-      campfire: null,
-      cafe: null
+const ambientSounds = {
+      rain: new Audio('rain.mp3'),
+      campfire: new Audio('rain.mp3'),
+      cafe: new Audio('rain.mp3')
     };
-
-    function generateNoiseBuffer(type) {
-      initAudio();
-      if (!audioCtx) return null;
-      const bufferSize = audioCtx.sampleRate * 2;
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-      
-      let lastOut = 0.0;
-      for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        // Bikin efek Pink Noise (Suara gemuruh hujan deras yang empuk)
-        lastOut = (lastOut + (0.02 * white)) / 1.02;
-        data[i] = lastOut * 3.5; 
-      }
-      return buffer;
-    }
-
-    function toggleAmbientSound(type) {
-      if (isMasterMuted) return showToast(`Suara sedang dibisukan!`);
-      initAudio();
-      if (!audioCtx) return;
-
-      const btn = document.getElementById(`btn-sound-${type}`);
-      const volInput = document.getElementById(`vol-${type}`);
-      const volume = volInput ? (parseFloat(volInput.value) / 100) : 0.5;
-
-      if (ambientAudios[type]) {
-        // Matikan suara
-        try {
-          ambientAudios[type].source.stop();
-          ambientAudios[type].source.disconnect();
-        } catch (e) {}
-        ambientAudios[type] = null;
-        if (btn) btn.classList.remove(`bg-amber-400`);
-        showToast(`Suara ${type} dimatikan`);
-      } else {
-        // Nyalakan suara internal
-        const buffer = generateNoiseBuffer(type);
-        if (!buffer) return;
-
-        const source = audioCtx.createBufferSource();
-        source.buffer = buffer;
-        source.loop = true;
-
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(volume * 0.8, audioCtx.currentTime); // Volume dinaikkan agar kencang
-
-        const filter = audioCtx.createBiquadFilter();
-        if (type === 'rain') {
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
-        } else if (type === 'campfire') {
-          filter.type = 'bandpass';
-          filter.frequency.setValueAtTime(500, audioCtx.currentTime);
-        } else {
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(600, audioCtx.currentTime);
-        }
-
-        source.connect(filter);
-        filter.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        source.start();
-
-        ambientAudios[type] = { source, gainNode };
-        if (btn) btn.classList.add(`bg-amber-400`);
-        showToast(`Suara ${type} aktif 🎧`);
-      }
-    }
-
-    function updateSoundVolume(type, val) {
-      if (ambientAudios[type] && ambientAudios[type].gainNode && audioCtx) {
-        ambientAudios[type].gainNode.gain.setValueAtTime((parseFloat(val) / 100) * 0.8, audioCtx.currentTime);
-      }
-    }
-
-    function stopAllAmbient() {
-      Object.keys(ambientAudios).forEach(key => {
-        if (ambientAudios[key]) {
-          try { ambientAudios[key].source.stop(); } catch(e){}
-          ambientAudios[key] = null;
-          const btn = document.getElementById(`btn-sound-${key}`);
-          if (btn) btn.classList.remove(`bg-amber-400`);
-        }
-      });
-    }
 
     Object.values(ambientSounds).forEach(audio => { audio.loop = true; });
 
